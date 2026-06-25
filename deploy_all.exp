@@ -1,0 +1,56 @@
+#!/usr/bin/expect -f
+set timeout -1
+
+# Rsync everything (except .git) to /var/www/html/ temporarily just to upload, then we move
+# Actually let's just rsync specific dirs
+spawn ssh -o ConnectTimeout=10 -o StrictHostKeyChecking=no root@185.235.69.108 "mkdir -p /var/www/saper /var/www/dashboard /var/www/pogoda /var/www/prawo /var/www/html"
+expect {
+    "password:" {
+        send "s7GQxEkWdz1gJRk8\r"
+        exp_continue
+    }
+    eof
+}
+
+# Rsync wisnia.dev (main)
+spawn rsync -avze "ssh -o ConnectTimeout=10 -o StrictHostKeyChecking=no" index.html style.css script.js root@185.235.69.108:/var/www/html/
+expect {
+    "password:" {
+        send "s7GQxEkWdz1gJRk8\r"
+        exp_continue
+    }
+    eof
+}
+
+# Rsync Subapps
+spawn rsync -avze "ssh -o ConnectTimeout=10 -o StrictHostKeyChecking=no" saper/ root@185.235.69.108:/var/www/saper/
+expect {
+    "password:" { send "s7GQxEkWdz1gJRk8\r"; exp_continue }
+    eof
+}
+
+spawn rsync -avze "ssh -o ConnectTimeout=10 -o StrictHostKeyChecking=no" dashboard/ root@185.235.69.108:/var/www/dashboard/
+expect {
+    "password:" { send "s7GQxEkWdz1gJRk8\r"; exp_continue }
+    eof
+}
+
+spawn rsync -avze "ssh -o ConnectTimeout=10 -o StrictHostKeyChecking=no" prawo/ root@185.235.69.108:/var/www/prawo/
+expect {
+    "password:" { send "s7GQxEkWdz1gJRk8\r"; exp_continue }
+    eof
+}
+
+# Rsync configs
+spawn rsync -avze "ssh -o ConnectTimeout=10 -o StrictHostKeyChecking=no" saper.wisnia.dev.conf dashboard.wisnia.dev.conf prawo.wisnia.dev.conf root@185.235.69.108:/etc/nginx/sites-available/
+expect {
+    "password:" { send "s7GQxEkWdz1gJRk8\r"; exp_continue }
+    eof
+}
+
+# Setup Nginx
+spawn ssh -o ConnectTimeout=10 -o StrictHostKeyChecking=no root@185.235.69.108 "ln -sf /etc/nginx/sites-available/saper.wisnia.dev.conf /etc/nginx/sites-enabled/saper.wisnia.dev.conf && ln -sf /etc/nginx/sites-available/dashboard.wisnia.dev.conf /etc/nginx/sites-enabled/dashboard.wisnia.dev.conf && ln -sf /etc/nginx/sites-available/prawo.wisnia.dev.conf /etc/nginx/sites-enabled/prawo.wisnia.dev.conf && nginx -t && systemctl reload nginx && echo 'certbot --nginx -d saper.wisnia.dev -d dashboard.wisnia.dev -d prawo.wisnia.dev --non-interactive --agree-tos -m tomasz.wiszniewski123@gmail.com' >> /root/setup_ssl.sh"
+expect {
+    "password:" { send "s7GQxEkWdz1gJRk8\r"; exp_continue }
+    eof
+}
