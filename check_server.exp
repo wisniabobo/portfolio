@@ -1,0 +1,10 @@
+#!/usr/bin/expect -f
+set timeout 10
+spawn ssh -o StrictHostKeyChecking=no root@185.235.69.108 "nginx -v; certbot --version || echo 'certbot not found'"
+expect {
+    "password:" {
+        send "s7GQxEkWdz1gJRk8\r"
+        exp_continue
+    }
+    eof
+}

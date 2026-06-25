@@ -1,0 +1,22 @@
+#!/usr/bin/expect -f
+set timeout -1
+
+# Rsync nginx config
+spawn rsync -avze "ssh -o StrictHostKeyChecking=no" wisnia.dev.conf root@185.235.69.108:/etc/nginx/sites-available/
+expect {
+    "password:" {
+        send "s7GQxEkWdz1gJRk8\r"
+        exp_continue
+    }
+    eof
+}
+
+# SSH to setup nginx and certbot
+spawn ssh -o StrictHostKeyChecking=no root@185.235.69.108 "ln -sf /etc/nginx/sites-available/wisnia.dev.conf /etc/nginx/sites-enabled/wisnia.dev.conf && rm -f /etc/nginx/sites-enabled/default && nginx -t && systemctl reload nginx && certbot --nginx -d wisnia.dev -d www.wisnia.dev --non-interactive --agree-tos -m tomasz.wiszniewski123@gmail.com || echo 'Certbot failed, probably DNS not resolving yet.'"
+expect {
+    "password:" {
+        send "s7GQxEkWdz1gJRk8\r"
+        exp_continue
+    }
+    eof
+}

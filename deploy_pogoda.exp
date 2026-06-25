@@ -1,0 +1,42 @@
+#!/usr/bin/expect -f
+set timeout -1
+
+# Create dir
+spawn ssh -o StrictHostKeyChecking=no root@185.235.69.108 "mkdir -p /var/www/pogoda"
+expect {
+    "password:" {
+        send "s7GQxEkWdz1gJRk8\r"
+        exp_continue
+    }
+    eof
+}
+
+# Rsync web files
+spawn rsync -avze "ssh -o StrictHostKeyChecking=no" pogoda/ root@185.235.69.108:/var/www/pogoda/
+expect {
+    "password:" {
+        send "s7GQxEkWdz1gJRk8\r"
+        exp_continue
+    }
+    eof
+}
+
+# Rsync nginx config
+spawn rsync -avze "ssh -o StrictHostKeyChecking=no" pogoda.wisnia.dev.conf root@185.235.69.108:/etc/nginx/sites-available/
+expect {
+    "password:" {
+        send "s7GQxEkWdz1gJRk8\r"
+        exp_continue
+    }
+    eof
+}
+
+# Setup Nginx & append to setup_ssl.sh
+spawn ssh -o StrictHostKeyChecking=no root@185.235.69.108 "ln -sf /etc/nginx/sites-available/pogoda.wisnia.dev.conf /etc/nginx/sites-enabled/pogoda.wisnia.dev.conf && nginx -t && systemctl reload nginx && echo 'certbot --nginx -d pogoda.wisnia.dev --non-interactive --agree-tos -m tomasz.wiszniewski123@gmail.com' >> /root/setup_ssl.sh"
+expect {
+    "password:" {
+        send "s7GQxEkWdz1gJRk8\r"
+        exp_continue
+    }
+    eof
+}

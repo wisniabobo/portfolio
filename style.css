@@ -1,0 +1,602 @@
+:root {
+    --bg: #008080;
+    --chrome: #c0c0c0;
+    --chrome-light: #dfdfdf;
+    --chrome-lighter: #ffffff;
+    --chrome-dark: #808080;
+    --chrome-darker: #000000;
+    --ink: #000;
+    --title: #000080;
+    --title-text: #fff;
+    --select: #000080;
+    --font: "MS Sans Serif", "Pixelated MS Sans Serif", Tahoma, sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font);
+    font-size: 11px;
+    height: 100vh;
+    overflow: hidden; /* Hide scrollbars on desktop */
+}
+
+/* Desktop & Icons */
+.desktop {
+    padding: 20px;
+    height: calc(100vh - 28px);
+    position: relative;
+    overflow: auto;
+}
+
+.icon-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 80px;
+}
+
+.icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.icon img {
+    width: 32px;
+    height: 32px;
+}
+
+.icon span {
+    color: white;
+    background: transparent;
+    padding: 2px 4px;
+}
+
+.icon.selected span {
+    background: var(--select);
+    border: 1px dotted var(--chrome-light);
+}
+
+/* Windows */
+.window {
+    background: var(--chrome);
+    border-top: 2px solid var(--chrome-lighter);
+    border-left: 2px solid var(--chrome-lighter);
+    border-right: 2px solid var(--chrome-darker);
+    border-bottom: 2px solid var(--chrome-darker);
+    box-shadow: inset -1px -1px 0 var(--chrome-dark), inset 1px 1px 0 var(--chrome);
+    padding: 3px;
+    position: absolute;
+    width: 450px;
+    max-width: 95vw;
+    display: flex;
+    flex-direction: column;
+    z-index: 10;
+}
+
+.window.active-window {
+    z-index: 20;
+}
+
+.titlebar {
+    background: var(--chrome-dark);
+    color: var(--chrome-light);
+    padding: 2px 4px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: default;
+}
+
+.window.active-window .titlebar {
+    background: linear-gradient(to right, var(--title), #1084d0);
+    color: var(--title-text);
+}
+
+.titlebar-title {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.titlebar-btns {
+    display: flex;
+    gap: 2px;
+}
+
+.tbtn {
+    background: var(--chrome);
+    border-top: 1px solid var(--chrome-lighter);
+    border-left: 1px solid var(--chrome-lighter);
+    border-right: 1px solid var(--chrome-darker);
+    border-bottom: 1px solid var(--chrome-darker);
+    width: 16px; height: 14px;
+    font-size: 9px;
+    line-height: 10px;
+    color: var(--ink);
+    text-align: center;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.tbtn:active {
+    border-top: 1px solid var(--chrome-darker);
+    border-left: 1px solid var(--chrome-darker);
+    border-right: 1px solid var(--chrome-lighter);
+    border-bottom: 1px solid var(--chrome-lighter);
+}
+
+.menubar {
+    background: var(--chrome);
+    padding: 2px 0;
+    border-bottom: 1px solid var(--chrome-dark);
+    display: flex;
+    gap: 4px;
+}
+
+.menubar span {
+    padding: 2px 8px;
+    cursor: pointer;
+}
+
+.menubar span:hover {
+    background: var(--title);
+    color: #fff;
+}
+
+.content {
+    padding: 12px;
+    background: var(--chrome);
+    flex: 1;
+    overflow-y: auto;
+}
+
+/* Typography & Elements */
+h1 { font-size: 18px; margin-bottom: 8px; }
+h2 { font-size: 14px; margin: 14px 0 6px; font-weight: bold; }
+p { line-height: 1.4; margin-bottom: 6px; }
+.mt-10 { margin-top: 10px; }
+
+.fieldset {
+    border: 1px groove var(--chrome-light);
+    padding: 10px 12px;
+    margin: 8px 0;
+}
+
+.fieldset legend {
+    background: var(--chrome);
+    padding: 0 4px;
+    font-weight: bold;
+}
+
+.btn {
+    font-family: var(--font);
+    font-size: 11px;
+    background: var(--chrome);
+    border-top: 1px solid var(--chrome-lighter);
+    border-left: 1px solid var(--chrome-lighter);
+    border-right: 1px solid var(--chrome-darker);
+    border-bottom: 1px solid var(--chrome-darker);
+    box-shadow: inset -1px -1px 0 var(--chrome-dark), inset 1px 1px 0 var(--chrome);
+    padding: 4px 14px;
+    min-width: 75px;
+    cursor: pointer;
+}
+
+.btn:active {
+    border-top: 1px solid var(--chrome-darker);
+    border-left: 1px solid var(--chrome-darker);
+    border-right: 1px solid var(--chrome-lighter);
+    border-bottom: 1px solid var(--chrome-lighter);
+    box-shadow: inset 1px 1px 0 var(--chrome-dark);
+}
+
+.row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.info-row {
+    margin-bottom: 4px;
+}
+
+.info-row label {
+    font-weight: bold;
+    width: 80px;
+}
+
+.profile-header {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.avatar {
+    width: 48px;
+    height: 48px;
+    image-rendering: pixelated;
+}
+
+/* Tabs */
+.tab-strip {
+    display: flex;
+    gap: 2px;
+    margin-top: 2px;
+    border-bottom: 1px solid var(--chrome-dark);
+    margin-bottom: 10px;
+}
+.tab {
+    background: var(--chrome);
+    border-top: 1px solid var(--chrome-lighter);
+    border-left: 1px solid var(--chrome-lighter);
+    border-right: 1px solid var(--chrome-darker);
+    padding: 4px 12px;
+    position: relative;
+    top: 1px;
+    cursor: pointer;
+}
+.tab.active {
+    background: var(--chrome);
+    font-weight: bold;
+    border-bottom: 1px solid var(--chrome);
+    top: 0;
+    padding-top: 6px;
+    z-index: 2;
+}
+.tab-pane {
+    display: none;
+}
+.tab-pane.active-pane {
+    display: block;
+}
+
+/* Progress Bars (Skills) */
+.skill-row {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+}
+.skill-row label {
+    margin-bottom: 4px;
+    font-weight: bold;
+}
+.progress {
+    border-top: 1px solid var(--chrome-dark);
+    border-left: 1px solid var(--chrome-dark);
+    border-right: 1px solid var(--chrome-lighter);
+    border-bottom: 1px solid var(--chrome-lighter);
+    height: 20px;
+    background: #fff;
+    padding: 2px;
+}
+.progress-bar {
+    height: 100%;
+    background: var(--title);
+    display: flex;
+    gap: 2px;
+    overflow: hidden;
+}
+.progress-bar span {
+    display: inline-block;
+    width: 8px;
+    height: 100%;
+    background: var(--title);
+    border-right: 2px solid var(--chrome-lighter);
+}
+
+/* File Explorer */
+.file-explorer-container {
+    display: flex;
+    background: #fff;
+    border: 1px solid var(--chrome-dark);
+    box-shadow: inset 1px 1px 0 var(--chrome-darker);
+    height: 250px;
+    padding: 0;
+}
+
+.sidebar {
+    width: 150px;
+    border-right: 1px solid var(--chrome-light);
+    padding: 10px 5px;
+    background: #fff;
+    overflow-y: auto;
+}
+
+.tree-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    padding: 2px;
+}
+.tree-item.indented { margin-left: 15px; }
+.tree-item.indented-2 { margin-left: 30px; }
+.tree-item.active-tree {
+    background: var(--title);
+    color: white;
+}
+.tree-item img { width: 14px; height: 14px; }
+
+.file-explorer {
+    flex: 1;
+    display: flex;
+    align-content: flex-start;
+    gap: 15px;
+    padding: 15px;
+    flex-wrap: wrap;
+    overflow-y: auto;
+}
+
+.file {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    width: 70px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.file img {
+    width: 32px; height: 32px;
+}
+
+.file:hover {
+    background: rgba(0,0,128,0.1);
+}
+
+/* Taskbar */
+.taskbar {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    background: var(--chrome);
+    border-top: 2px solid var(--chrome-lighter);
+    padding: 2px 4px;
+    display: flex;
+    align-items: center;
+    height: 28px;
+    z-index: 1000;
+}
+
+.start-btn {
+    background: var(--chrome);
+    border-top: 1px solid var(--chrome-lighter);
+    border-left: 1px solid var(--chrome-lighter);
+    border-right: 1px solid var(--chrome-darker);
+    border-bottom: 1px solid var(--chrome-darker);
+    padding: 2px 6px;
+    font-weight: bold;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+}
+
+.start-btn:active, .start-btn.active {
+    border-top: 1px solid var(--chrome-darker);
+    border-left: 1px solid var(--chrome-darker);
+    border-right: 1px solid var(--chrome-lighter);
+    border-bottom: 1px solid var(--chrome-lighter);
+}
+
+.start-btn img {
+    width: 16px;
+    height: 16px;
+}
+
+.taskbar-divider {
+    width: 2px;
+    height: 100%;
+    border-left: 1px solid var(--chrome-dark);
+    border-right: 1px solid var(--chrome-lighter);
+    margin: 0 4px;
+}
+
+.taskbar-tasks {
+    display: flex;
+    gap: 4px;
+    flex: 1;
+}
+
+.taskbar-task {
+    background: var(--chrome);
+    border-top: 1px solid var(--chrome-lighter);
+    border-left: 1px solid var(--chrome-lighter);
+    border-right: 1px solid var(--chrome-darker);
+    border-bottom: 1px solid var(--chrome-darker);
+    padding: 2px 8px;
+    font-size: 11px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    max-width: 150px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.taskbar-task.active {
+    border-top: 1px solid var(--chrome-darker);
+    border-left: 1px solid var(--chrome-darker);
+    border-right: 1px solid var(--chrome-lighter);
+    border-bottom: 1px solid var(--chrome-lighter);
+    background: #e0e0e0;
+}
+
+.taskbar-task img {
+    width: 14px; height: 14px;
+}
+
+.taskbar-spacer {
+    flex: 1;
+}
+
+.tray {
+    border-top: 1px solid var(--chrome-dark);
+    border-left: 1px solid var(--chrome-dark);
+    border-right: 1px solid var(--chrome-lighter);
+    border-bottom: 1px solid var(--chrome-lighter);
+    padding: 2px 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.tray-email {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    text-decoration: none;
+    color: var(--ink);
+}
+
+/* Start Menu */
+.start-menu {
+    position: fixed;
+    bottom: 28px;
+    left: 0;
+    width: 200px;
+    background: var(--chrome);
+    border-top: 2px solid var(--chrome-lighter);
+    border-left: 2px solid var(--chrome-lighter);
+    border-right: 2px solid var(--chrome-darker);
+    border-bottom: 2px solid var(--chrome-darker);
+    display: flex;
+    z-index: 999;
+}
+
+.start-menu-sidebar {
+    background: linear-gradient(to bottom, var(--title), #1084d0);
+    color: var(--title-text);
+    width: 30px;
+    position: relative;
+}
+
+.start-menu-sidebar span {
+    position: absolute;
+    bottom: 5px;
+    left: 2px;
+    transform: rotate(-90deg);
+    transform-origin: left bottom;
+    font-size: 14px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.start-menu-items {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 2px;
+}
+
+.start-item {
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: var(--ink);
+    cursor: pointer;
+}
+
+.start-item:hover {
+    background: var(--title);
+    color: var(--title-text);
+}
+
+.start-item img {
+    width: 24px;
+    height: 24px;
+}
+
+.start-separator {
+    height: 1px;
+    background: var(--chrome-dark);
+    border-bottom: 1px solid var(--chrome-lighter);
+    margin: 2px 0;
+}
+
+/* Responsywność - Mobile Optimization */
+@media (max-width: 600px) {
+    .window {
+        width: 100% !important;
+        max-width: 100% !important;
+        top: 0 !important;
+        left: 0 !important;
+        height: calc(100% - 28px) !important;
+        margin: 0 !important;
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+    }
+    
+    .content {
+        padding: 8px;
+    }
+
+    .icon-grid {
+        flex-direction: row;
+        width: 100%;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+    
+    .hide-mobile {
+        display: none;
+    }
+    
+    .tbtn {
+        width: 24px;
+        height: 24px;
+        font-size: 14px;
+        line-height: 14px;
+    }
+    
+    .sidebar {
+        display: none; /* Hide tree view on mobile to save space */
+    }
+    
+    .file-explorer {
+        justify-content: center;
+        padding: 5px;
+        gap: 10px;
+    }
+    
+    .desktop {
+        padding: 10px;
+    }
+    
+    .tab {
+        padding: 6px 6px;
+        font-size: 11px;
+    }
+    
+    .profile-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 10px;
+    }
+
+    .taskbar-task {
+        max-width: 100px;
+    }
+}

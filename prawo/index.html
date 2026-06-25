@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kreator Pism Codziennych - Tomasz Wiszniewski</title>
+    <meta name="description" content="Kreator pism prawniczych. Wygeneruj pismo w 3 minuty.">
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Patrick+Hand&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=1">
+</head>
+<body>
+    <div class="desk">
+        
+        <!-- Post-It Note Instructions -->
+        <div class="sticky-note instruction-note">
+            <h3>Cześć! 👋</h3>
+            <p>Jestem studentem I roku Prawa na UO i stworzyłem ten kreator, żeby ułatwić Ci życie.</p>
+            <p>1. Wybierz rodzaj pisma.<br>2. Wypełnij karteczki.<br>3. Wydrukuj gotowe pismo!</p>
+            <p class="signature">- Tomek</p>
+            <div class="pin"></div>
+        </div>
+
+        <div class="sticky-note selector-note">
+            <h3>Wybierz sprawę:</h3>
+            <select id="doc-type">
+                <option value="zwrot">Odstąpienie od umowy (Zwrot)</option>
+                <option value="reklamacja">Reklamacja (Rękojmia)</option>
+                <option value="wezwanie">Wezwanie do zapłaty</option>
+            </select>
+            <div class="tape"></div>
+        </div>
+
+        <!-- Notebook Area -->
+        <div class="notebook-container">
+            <div class="notebook-binding"></div>
+            
+            <div class="notebook-page input-page">
+                <h2>Twoje Dane</h2>
+                <div class="form-group">
+                    <label>Twoje Imię i Nazwisko:</label>
+                    <input type="text" id="user-name" placeholder="np. Jan Kowalski" value="Jan Kowalski">
+                </div>
+                <div class="form-group">
+                    <label>Twój Adres:</label>
+                    <textarea id="user-address" rows="2" placeholder="np. ul. Kwiatowa 1, 00-001 Warszawa">ul. Testowa 12/3&#10;45-001 Opole</textarea>
+                </div>
+                
+                <h2>Dane Sprzedawcy / Dłużnika</h2>
+                <div class="form-group">
+                    <label>Nazwa firmy / Imię:</label>
+                    <input type="text" id="target-name" placeholder="np. Sklep XYZ Sp. z o.o." value="Super Sklep Sp. z o.o.">
+                </div>
+                <div class="form-group">
+                    <label>Adres firmy:</label>
+                    <textarea id="target-address" rows="2" placeholder="Adres firmy">ul. Prawnicza 5&#10;00-123 Warszawa</textarea>
+                </div>
+
+                <h2>Szczegóły</h2>
+                <div class="form-group">
+                    <label>Miejscowość i Data:</label>
+                    <input type="text" id="date-place" value="Opole, 25.10.2026">
+                </div>
+                <div class="form-group">
+                    <label id="detail-label-1">Przedmiot umowy:</label>
+                    <input type="text" id="detail-1" placeholder="np. Buty sportowe X" value="Laptop XYZ-2000">
+                </div>
+                <div class="form-group">
+                    <label id="detail-label-2">Numer Zamówienia:</label>
+                    <input type="text" id="detail-2" placeholder="np. 12345/2026" value="ZAM/2026/10/12">
+                </div>
+
+                <button class="generate-btn" onclick="generateDocument()">Generuj Pismo ✨</button>
+                <div style="text-align: center; margin-top: 15px;">
+                    <a href="https://wisnia.dev" style="color: #000; font-family: 'Patrick Hand';">Wróć do Portfolio</a>
+                </div>
+            </div>
+
+            <!-- Output Page (A4 simulation) -->
+            <div class="notebook-page output-page">
+                <div id="document-preview" class="doc-content">
+                    <!-- JS fills this -->
+                    <p style="text-align: center; color: #999; margin-top: 100px; font-size: 24px;">Kliknij "Generuj Pismo" na lewej kartce.</p>
+                </div>
+                <div class="print-overlay">
+                    <button class="print-btn" onclick="window.print()">🖨️ Drukuj / Zapisz PDF</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <script src="script.js?v=1"></script>
+</body>
+</html>

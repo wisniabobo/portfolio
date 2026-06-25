@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tomasz Wiszniewski - Portfolio</title>
+    <meta name="description" content="Portfolio Tomasza Wiszniewskiego - Kreatywny Developer. Lekka, responsywna strona w stylu retro Windows 95.">
+    <link rel="stylesheet" href="style.css?v=3">
+</head>
+<body>
+    <div class="desktop" id="desktop">
+        <!-- Desktop Icons -->
+        <div class="icon-grid">
+            <div class="icon" ondblclick="openWindow('about-window')" onclick="selectIcon(this)">
+                <img src="https://win98icons.alexmeub.com/icons/png/computer_explorer-4.png" alt="My Computer">
+                <span>O mnie.exe</span>
+            </div>
+            <div class="icon" ondblclick="openWindow('projects-window')" onclick="selectIcon(this)">
+                <img src="https://win98icons.alexmeub.com/icons/png/directory_open_file_mydocs-4.png" alt="My Documents">
+                <span>Projekty</span>
+            </div>
+            <div class="icon" ondblclick="openWindow('github-window')" onclick="selectIcon(this)">
+                <img src="https://win98icons.alexmeub.com/icons/png/network_internet_pcs_installer-2.png" alt="Github">
+                <span>Github.exe</span>
+            </div>
+            <a href="mailto:tomasz.wiszniewski123@gmail.com" class="icon" style="text-decoration: none; color: inherit;" onclick="selectIcon(this)">
+                <img src="https://win98icons.alexmeub.com/icons/png/message_envelope_open-1.png" alt="E-mail">
+                <span>Kontakt</span>
+            </a>
+        </div>
+
+        <!-- Main About Window -->
+        <div class="window active-window" id="about-window" style="top: 50px; left: 50px;">
+            <div class="titlebar" id="about-window-header">
+                <div class="titlebar-title">
+                    <img src="https://win98icons.alexmeub.com/icons/png/computer_explorer-4.png" alt="ikona" width="16" height="16">
+                    <span>Właściwości systemu: Tomasz Wiszniewski</span>
+                </div>
+                <div class="titlebar-btns">
+                    <button class="tbtn" onclick="minimizeWindow('about-window')">_</button>
+                    <button class="tbtn" onclick="maximizeWindow('about-window')">□</button>
+                    <button class="tbtn" onclick="closeWindow('about-window')">✕</button>
+                </div>
+            </div>
+            <div class="content">
+                <div class="tab-strip">
+                    <span class="tab active" onclick="switchTab('about-window', 'tab-general', this)">Ogólne</span>
+                    <span class="tab" onclick="switchTab('about-window', 'tab-skills', this)">Umiejętności</span>
+                    <span class="tab" onclick="switchTab('about-window', 'tab-contact', this)">Kontakt</span>
+                </div>
+
+                <div class="tab-content-container">
+                    <!-- Tab: General -->
+                    <div id="tab-general" class="tab-pane active-pane">
+                        <div class="profile-header">
+                            <img src="https://win98icons.alexmeub.com/icons/png/user_computer-0.png" alt="Avatar" class="avatar">
+                            <div>
+                                <h1>Tomasz Wiszniewski</h1>
+                                <p><strong>Kreatywny Web Developer</strong></p>
+                                <p>System: TomaszOS v95.0 (Edycja Zoptymalizowana)</p>
+                            </div>
+                        </div>
+                        
+                        <fieldset class="fieldset">
+                            <legend>Podsumowanie</legend>
+                            <p>Witaj w moim środowisku programistycznym! Jestem pasjonatem technologii i tworzę zaawansowane, przemyślane aplikacje webowe.</p>
+                            <p>Zwracam ogromną uwagę na optymalizację, czystość kodu oraz niebanalny design (tak jak ta strona!). Moim celem jest budowanie rozwiązań, które są nie tylko funkcjonalne, ale też wywołują efekt "wow" i działają błyskawicznie na każdym urządzeniu.</p>
+                        </fieldset>
+
+                        <div class="row info-row mt-10">
+                            <label>Procesor:</label><span>Gotowy na wielowątkowe wyzwania</span>
+                        </div>
+                        <div class="row info-row">
+                            <label>Pamięć:</label><span>Minimalne zużycie zasobów klienta</span>
+                        </div>
+                    </div>
+
+                    <!-- Tab: Skills -->
+                    <div id="tab-skills" class="tab-pane">
+                        <fieldset class="fieldset" style="height: 100%;">
+                            <legend>Moduły technologiczne</legend>
+                            
+                            <div class="skill-row">
+                                <label>JavaScript (Mid)</label>
+                                <div class="progress"><div class="progress-bar" style="width: 70%;"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div></div>
+                            </div>
+                            <div class="skill-row">
+                                <label>Python (Mid)</label>
+                                <div class="progress"><div class="progress-bar" style="width: 70%;"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div></div>
+                            </div>
+                            <div class="skill-row">
+                                <label>Excel (Mid)</label>
+                                <div class="progress"><div class="progress-bar" style="width: 65%;"><span></span><span></span><span></span><span></span><span></span><span></span></div></div>
+                            </div>
+                            <div class="skill-row">
+                                <label>C++ (Podstawy)</label>
+                                <div class="progress"><div class="progress-bar" style="width: 30%;"><span></span><span></span><span></span></div></div>
+                            </div>
+                            <div class="skill-row">
+                                <label>Nowoczesne Frameworki</label>
+                                <div class="progress"><div class="progress-bar" style="width: 85%;"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div></div>
+                            </div>
+                            <div class="skill-row">
+                                <label>Prawo (Student I r. UO)</label>
+                                <div class="progress"><div class="progress-bar" style="width: 100%;"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div></div>
+                            </div>
+                        </fieldset>
+                    </div>
+
+                    <!-- Tab: Contact -->
+                    <div id="tab-contact" class="tab-pane">
+                        <div style="text-align: center; margin-top: 20px;">
+                            <img src="https://win98icons.alexmeub.com/icons/png/modem-1.png" alt="Modem" width="48">
+                            <h2>Nawiąż połączenie...</h2>
+                            <p>Szukasz solidnego developera do swojego projektu?</p>
+                            
+                            <div style="margin: 15px 0; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+                                <a href="https://www.facebook.com/wisnia157/" target="_blank" class="btn" style="text-decoration: none; padding: 4px 10px;">Facebook (wisnia157)</a>
+                                <a href="https://www.linkedin.com/in/tomaszwiszniewski/" target="_blank" class="btn" style="text-decoration: none; padding: 4px 10px;">LinkedIn</a>
+                                <a href="https://twitter.com/wisnia157" target="_blank" class="btn" style="text-decoration: none; padding: 4px 10px;">X (wisnia157)</a>
+                                <a href="#" onclick="alert('Discord: wisniabobo')" class="btn" style="text-decoration: none; padding: 4px 10px;">Discord (wisniabobo)</a>
+                            </div>
+
+                            <a href="mailto:tomasz.wiszniewski123@gmail.com" class="btn" style="display: inline-block; text-decoration: none; padding: 6px 20px; font-weight: bold; font-size: 14px;">
+                                Wyślij E-mail
+                            </a>
+                            <p style="margin-top: 15px; font-weight: bold;">tomasz.wiszniewski123@gmail.com</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-10" style="justify-content: flex-end; gap: 8px;">
+                    <button class="btn" onclick="closeWindow('about-window')">OK</button>
+                    <button class="btn" onclick="alert('Brak ustawień do anulowania.')">Anuluj</button>
+                    <button class="btn" onclick="alert('Zastosowano pomyślnie!')">Zastosuj</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Projects Window -->
+        <div class="window" id="projects-window" style="top: 80px; left: 80px; display: none;">
+            <div class="titlebar" id="projects-window-header">
+                <div class="titlebar-title">
+                    <img src="https://win98icons.alexmeub.com/icons/png/directory_open_file_mydocs-4.png" alt="ikona" width="16" height="16">
+                    <span>Eksplorator Projektów</span>
+                </div>
+                <div class="titlebar-btns">
+                    <button class="tbtn" onclick="minimizeWindow('projects-window')">_</button>
+                    <button class="tbtn" onclick="maximizeWindow('projects-window')">□</button>
+                    <button class="tbtn" onclick="closeWindow('projects-window')">✕</button>
+                </div>
+            </div>
+            <div class="menubar">
+                <span><u>P</u>lik</span>
+                <span><u>E</u>dycja</span>
+                <span><u>W</u>idok</span>
+                <span>Ulu<u>b</u>ione</span>
+                <span>Pomo<u>c</u></span>
+            </div>
+            <div class="content file-explorer-container">
+                <div class="sidebar">
+                    <div class="tree-item"><img src="https://win98icons.alexmeub.com/icons/png/drive_c-0.png"> Dysk Lokalny (C:)</div>
+                    <div class="tree-item indented"><img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png"> Tomasz</div>
+                    <div class="tree-item indented-2 active-tree"><img src="https://win98icons.alexmeub.com/icons/png/directory_open_file_mydocs-4.png"> Projekty</div>
+                </div>
+                <div class="file-explorer">
+                    <a href="https://autio.pl" target="_blank" class="file" style="text-decoration:none;color:inherit">
+                        <img src="https://win98icons.alexmeub.com/icons/png/world-1.png" alt="web">
+                        <span>autio.pl (Ogłoszenia Aut)</span>
+                    </a>
+                    <a href="https://metruj.pl" target="_blank" class="file" style="text-decoration:none;color:inherit">
+                        <img src="https://win98icons.alexmeub.com/icons/png/world-1.png" alt="web">
+                        <span>metruj.pl (Nieruchomości)</span>
+                    </a>
+                    <a href="https://biuro.metruj.pl" target="_blank" class="file" style="text-decoration:none;color:inherit">
+                        <img src="https://win98icons.alexmeub.com/icons/png/world-1.png" alt="web">
+                        <span>biuro.metruj.pl (Biuro Nieruchomości)</span>
+                    </a>
+                    <a href="https://saper.wisnia.dev" target="_blank" class="file" style="text-decoration:none;color:inherit">
+                        <img src="https://win98icons.alexmeub.com/icons/png/mine-0.png" alt="game">
+                        <span>Saper (Retro Gra)</span>
+                    </a>
+                    <a href="https://dashboard.wisnia.dev" target="_blank" class="file" style="text-decoration:none;color:inherit">
+                        <img src="https://win98icons.alexmeub.com/icons/png/network_normal_two_pcs-1.png" alt="app">
+                        <span>Dashboard Crypto (Nowoczesny)</span>
+                    </a>
+                    <a href="https://pogoda.wisnia.dev" target="_blank" class="file" style="text-decoration:none;color:inherit">
+                        <img src="https://win98icons.alexmeub.com/icons/png/computer_explorer-4.png" alt="app">
+                        <span>Pogoda (Telegazeta)</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Github Explorer Window -->
+    <div class="window" id="github-window" style="top: 110px; left: 110px; display: none; width: 450px;">
+        <div class="titlebar" id="github-window-header">
+            <div class="titlebar-title">
+                <img src="https://win98icons.alexmeub.com/icons/png/network_internet_pcs_installer-2.png" alt="ikona" width="16" height="16">
+                <span>Github API: wisniabobo</span>
+            </div>
+            <div class="titlebar-btns">
+                <button class="tbtn" onclick="minimizeWindow('github-window')">_</button>
+                <button class="tbtn" onclick="maximizeWindow('github-window')">□</button>
+                <button class="tbtn" onclick="closeWindow('github-window')">✕</button>
+            </div>
+        </div>
+        <div class="menubar">
+            <span><u>P</u>lik</span>
+            <span><u>W</u>idok</span>
+            <span>Pomo<u>c</u></span>
+        </div>
+        <div class="content">
+            <div style="background: white; border: 2px inset; height: 300px; overflow-y: auto; padding: 5px;" id="github-repos">
+                <div style="text-align:center; padding: 20px;">
+                    <img src="https://win98icons.alexmeub.com/icons/png/search_computer-0.png" class="rotating-icon" alt="Loading">
+                    <p>Nawiązywanie połączenia z Github API...</p>
+                </div>
+            </div>
+            <div class="row mt-10" style="justify-content: space-between; align-items: center;">
+                <span id="repo-count">Znaleziono: 0 obiektów</span>
+                <button class="btn" onclick="fetchGithubRepos()">Odśwież</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Taskbar -->
+    <div class="taskbar">
+        <button class="start-btn" onclick="toggleStartMenu(event)">
+            <img src="https://win98icons.alexmeub.com/icons/png/windows-0.png" alt="Windows Logo"> Start
+        </button>
+        <div class="taskbar-divider"></div>
+        <div class="taskbar-tasks" id="taskbar-tasks">
+            <!-- Active tasks will appear here -->
+        </div>
+        <span class="taskbar-spacer"></span>
+        <div class="tray">
+            <a href="mailto:tomasz.wiszniewski123@gmail.com" class="tray-email" title="Napisz do mnie">
+                <img src="https://win98icons.alexmeub.com/icons/png/message_envelope_open-1.png" width="14" alt="Email">
+                <span class="hide-mobile">tomasz.wiszniewski123@gmail.com</span>
+            </a>
+            <span class="clock" id="clock">12:00 PM</span>
+        </div>
+    </div>
+
+    <!-- Start Menu -->
+    <div class="start-menu" id="start-menu" style="display: none;">
+        <div class="start-menu-sidebar">
+            <span>TomaszOS95</span>
+        </div>
+        <div class="start-menu-items">
+            <a href="#" class="start-item" onclick="openWindow('about-window'); toggleStartMenu()">
+                <img src="https://win98icons.alexmeub.com/icons/png/computer_explorer-4.png" alt="Programs">
+                <u>O</u> mnie
+            </a>
+            <a href="#" class="start-item" onclick="openWindow('projects-window'); toggleStartMenu()">
+                <img src="https://win98icons.alexmeub.com/icons/png/directory_open_file_mydocs-4.png" alt="Documents">
+                <u>P</u>rojekty
+            </a>
+            <div class="start-separator"></div>
+            <a href="mailto:tomasz.wiszniewski123@gmail.com" class="start-item">
+                <img src="https://win98icons.alexmeub.com/icons/png/message_envelope_open-1.png" alt="Contact">
+                <u>K</u>ontakt
+            </a>
+            <div class="start-separator"></div>
+            <div class="start-item" onclick="alert('Możesz zamknąć tylko kartę przeglądarki! :)')">
+                <img src="https://win98icons.alexmeub.com/icons/png/shut_down_normal-2.png" alt="Shutdown">
+                Zamknij <u>s</u>ystem...
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js?v=3"></script>
+</body>
+</html>

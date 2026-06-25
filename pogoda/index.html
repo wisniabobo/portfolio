@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TELEGAZETA - Pogoda</title>
+    <meta name="description" content="Sprawdź pogodę na świecie w stylu klasycznej Telegazety.">
+    <link rel="stylesheet" href="style.css?v=1">
+</head>
+<body>
+    <div class="teletext-container">
+        <!-- Teletext Header -->
+        <header class="tt-header">
+            <span class="page-num">P100</span>
+            <span class="channel-name">TELEGAZETA</span>
+            <span class="date-time" id="datetime">CZW 25 CZE 12:00:00</span>
+        </header>
+
+        <div class="tt-title">
+            <span class="color-yellow">*** POGODA NA SWIECIE ***</span>
+        </div>
+
+        <div class="tt-content">
+            <p class="color-cyan">Wpisz nazwe miasta lub panstwa:</p>
+            <div class="search-box">
+                <span class="color-green">> </span>
+                <input type="text" id="cityInput" class="tt-input" placeholder="WPISZ MIASTO..." autocomplete="off">
+                <button class="tt-btn" id="searchBtn">SZUKAJ</button>
+            </div>
+            
+            <div id="loading" class="hidden">
+                <p class="color-magenta blink">TRWA WYSZUKIWANIE DANYCH...</p>
+            </div>
+
+            <div id="error" class="hidden">
+                <p class="color-red">BLAD: NIE ZNALEZIONO MIASTA LUB BRAK DANYCH.</p>
+            </div>
+
+            <div id="weatherData" class="hidden tt-data">
+                <div class="separator color-blue">========================================</div>
+                <p><span class="color-white">MIASTO:      </span><span id="resCity" class="color-yellow"></span></p>
+                <p><span class="color-white">TEMPERATURA: </span><span id="resTemp" class="color-cyan"></span></p>
+                <p><span class="color-white">STAN:        </span><span id="resCond" class="color-green"></span></p>
+                <p><span class="color-white">WIATR:       </span><span id="resWind" class="color-magenta"></span></p>
+                <p><span class="color-white">WILGOTNOSC:  </span><span id="resHum" class="color-cyan"></span></p>
+                <div class="separator color-blue">========================================</div>
+                
+                <div class="ascii-art color-yellow" id="weatherArt">
+                    <!-- Pogodowy ASCII Art -->
+                </div>
+            </div>
+            
+            <div class="footer-info">
+                <p class="color-white">DANE DOSTARCZA: <span class="color-green">OPEN-METEO API</span></p>
+                <p class="color-cyan">PORTFOLIO: <a href="https://wisnia.dev" class="color-magenta">WISNIA.DEV</a></p>
+            </div>
+        </div>
+
+        <!-- Teletext Footer navigation -->
+        <footer class="tt-footer">
+            <a href="https://wisnia.dev" class="nav-btn bg-red color-black" style="text-decoration: none;">100 PORTFOLIO</a>
+            <a href="https://saper.wisnia.dev" class="nav-btn bg-green color-black" style="text-decoration: none;" title="Wkrótce!">200 SAPER (GRA)</a>
+            <a href="https://cv.wisnia.dev" class="nav-btn bg-yellow color-black" style="text-decoration: none;" title="Wkrótce!">300 CV KONSOLA</a>
+            <a href="mailto:tomasz.wiszniewski123@gmail.com" class="nav-btn bg-cyan color-black" style="text-decoration: none;">400 KONTAKT</a>
+        </footer>
+    </div>
+
+    <script src="script.js?v=1"></script>
+</body>
+</html>
