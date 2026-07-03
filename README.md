@@ -19,6 +19,19 @@ i bez build stepu.
 - **SEO**: JSON-LD (Person), canonical, OG, `sitemap.xml`, `robots.txt`,
   własna strona 404.
 
+## Dashboard — dashboard.wisnia.dev
+
+Rynek kryptowalut na żywo (katalog `dashboard/`):
+
+- **Binance WebSocket** — ceny tykające w czasie rzeczywistym (taśma,
+  tabela z flashami, nagłówek wykresu), auto-reconnect z backoffem.
+- **Własny wykres na `<canvas>`** — świece + linia, wolumen, crosshair
+  z tooltipem OHLC, live-aktualizacja ostatniej świecy (stream kline),
+  interwały 15m–1T.
+- **CoinGecko** — kapitalizacja, dominacja BTC (donut), top 20 monet
+  ze sparkline'ami, sortowanie, wyszukiwarka; cache ze stale-fallbackiem.
+- **Fear & Greed** (alternative.me) na wskaźniku SVG.
+
 ## Struktura
 
 | Plik | Rola |
