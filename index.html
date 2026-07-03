@@ -1,29 +1,64 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="pl" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tomasz Wiszniewski — Portfolio | wisnia.dev</title>
-  <meta name="description" content="Portfolio Tomasza Wiszniewskiego — projekty webowe, portale ogłoszeniowe (metruj.pl, autio.pl) oraz aplikacje open source na GitHubie.">
-  <meta property="og:title" content="Tomasz Wiszniewski — Portfolio">
-  <meta property="og:description" content="Projekty webowe: metruj.pl, biuro.metruj.pl, autio.pl oraz open source na GitHubie.">
-  <meta property="og:url" content="https://wisnia.dev">
+  <title>Tomasz Wiszniewski — Web Developer | wisnia.dev</title>
+  <meta name="description" content="Portfolio Tomasza Wiszniewskiego — buduję i utrzymuję serwisy internetowe: portale ogłoszeniowe metruj.pl i autio.pl, strony firmowe oraz projekty open source.">
+  <link rel="canonical" href="https://wisnia.dev/">
+
+  <meta property="og:title" content="Tomasz Wiszniewski — Web Developer">
+  <meta property="og:description" content="Buduję serwisy internetowe: metruj.pl, biuro.metruj.pl, autio.pl oraz projekty open source na GitHubie.">
+  <meta property="og:url" content="https://wisnia.dev/">
   <meta property="og:type" content="website">
+  <meta property="og:locale" content="pl_PL">
+  <meta name="twitter:card" content="summary">
+  <meta name="theme-color" content="#0a0e17">
+
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍒</text></svg>">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://api.github.com" crossorigin>
-  <link rel="preconnect" href="https://avatars.githubusercontent.com" crossorigin>
-  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=dev">
+
+  <!-- motyw przed pierwszym renderem — bez mignięcia -->
+  <script>
+    try { document.documentElement.dataset.theme = localStorage.getItem("theme") || "dark"; } catch (e) {}
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Tomasz Wiszniewski",
+    "url": "https://wisnia.dev",
+    "jobTitle": "Web Developer",
+    "nationality": "PL",
+    "sameAs": ["https://github.com/wisniabobo"],
+    "knowsAbout": ["JavaScript", "TypeScript", "HTML", "CSS", "nginx", "Linux"]
+  }
+  </script>
 </head>
 <body>
+  <div class="scroll-progress" aria-hidden="true"></div>
   <div class="bg-glow" aria-hidden="true"></div>
 
   <header class="site-header">
     <nav class="nav container">
-      <a href="#" class="nav-logo">wisnia<span>.dev</span></a>
-      <div class="nav-links">
-        <a href="#projekty">Projekty</a>
-        <a href="#github">GitHub</a>
-        <a href="#kontakt">Kontakt</a>
+      <a href="#" class="nav-logo" id="logo">wisnia<span>.dev</span></a>
+      <div class="nav-right">
+        <div class="nav-links">
+          <a href="#projekty">Projekty</a>
+          <a href="#stack">Stack</a>
+          <a href="#github">GitHub</a>
+          <a href="#kontakt">Kontakt</a>
+        </div>
+        <button id="theme-toggle" class="theme-toggle" aria-label="Przełącz motyw jasny/ciemny" title="Motyw">
+          <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        </button>
       </div>
     </nav>
   </header>
@@ -34,10 +69,12 @@
       <div class="hero-text">
         <p class="hero-hello">Cześć, jestem</p>
         <h1 class="hero-name">Tomasz<br>Wiszniewski</h1>
+        <p class="hero-typed" aria-label="Buduję portale ogłoszeniowe, strony firmowe, aplikacje webowe i narzędzia dla biznesu">
+          Buduję&nbsp;<span id="typed">portale ogłoszeniowe</span><span class="caret" aria-hidden="true"></span>
+        </p>
         <p class="hero-tagline">
-          Buduję i rozwijam <strong>serwisy internetowe</strong> — od portali
-          ogłoszeniowych po narzędzia dla biznesu. Od pomysłu, przez kod,
-          po wdrożenie na produkcję.
+          Od pomysłu, przez kod, po <strong>wdrożenie i utrzymanie na produkcji</strong>.
+          Własny serwer, własne deploye, realni użytkownicy.
         </p>
         <div class="hero-cta">
           <a href="#projekty" class="btn btn-primary">Zobacz projekty</a>
@@ -63,12 +100,12 @@
 
     <!-- ===== PROJEKTY LIVE ===== -->
     <section id="projekty" class="section container">
-      <div class="section-head">
+      <div class="section-head reveal">
         <h2>Projekty na produkcji</h2>
-        <p>Serwisy, które działają i mają realnych użytkowników.</p>
+        <p>Serwisy, które działają i mają realnych użytkowników — projektuję, koduję i utrzymuję je samodzielnie.</p>
       </div>
       <div class="live-grid">
-        <a href="https://metruj.pl" target="_blank" rel="noopener" class="live-card reveal">
+        <a href="https://metruj.pl" target="_blank" rel="noopener" class="live-card glow-card tilt reveal">
           <div class="live-card-top">
             <span class="live-icon">🏠</span>
             <span class="live-badge"><span class="dot-online"></span> LIVE</span>
@@ -82,7 +119,7 @@
           <span class="live-link">metruj.pl <span class="arrow">→</span></span>
         </a>
 
-        <a href="https://biuro.metruj.pl" target="_blank" rel="noopener" class="live-card reveal">
+        <a href="https://biuro.metruj.pl" target="_blank" rel="noopener" class="live-card glow-card tilt reveal">
           <div class="live-card-top">
             <span class="live-icon">🏢</span>
             <span class="live-badge"><span class="dot-online"></span> LIVE</span>
@@ -96,14 +133,14 @@
           <span class="live-link">biuro.metruj.pl <span class="arrow">→</span></span>
         </a>
 
-        <a href="https://autio.pl" target="_blank" rel="noopener" class="live-card reveal">
+        <a href="https://autio.pl" target="_blank" rel="noopener" class="live-card glow-card tilt reveal">
           <div class="live-card-top">
             <span class="live-icon">🚗</span>
             <span class="live-badge"><span class="dot-online"></span> LIVE</span>
           </div>
           <h3>autio.pl</h3>
           <p>Darmowe ogłoszenia motoryzacyjne — samochody osobowe, dostawcze,
-             ciężarowe, motocykle, maszyny i części. Kupuj i sprzedawaj bez prowizji.</p>
+             ciężarowe, motocykle, maszyny i części. Bez prowizji.</p>
           <ul class="tags">
             <li>Portal ogłoszeniowy</li><li>Motoryzacja</li><li>Full-stack</li>
           </ul>
@@ -112,33 +149,85 @@
       </div>
     </section>
 
+    <!-- ===== STACK ===== -->
+    <section id="stack" class="section container">
+      <div class="section-head reveal">
+        <h2>Stack technologiczny</h2>
+        <p>Narzędzia, z których korzystam na co dzień — od frontendu po serwer.</p>
+      </div>
+      <div class="marquee reveal" aria-hidden="true">
+        <div class="marquee-track">
+          <span>JavaScript</span><span>TypeScript</span><span>HTML5</span><span>CSS3</span>
+          <span>Node.js</span><span>REST API</span><span>Git &amp; GitHub</span><span>nginx</span>
+          <span>Linux / Ubuntu</span><span>Let's Encrypt</span><span>SEO</span><span>RWD</span>
+          <!-- duplikat dla płynnej pętli -->
+          <span>JavaScript</span><span>TypeScript</span><span>HTML5</span><span>CSS3</span>
+          <span>Node.js</span><span>REST API</span><span>Git &amp; GitHub</span><span>nginx</span>
+          <span>Linux / Ubuntu</span><span>Let's Encrypt</span><span>SEO</span><span>RWD</span>
+        </div>
+      </div>
+      <div class="stack-grid">
+        <div class="stack-card glow-card reveal">
+          <span class="stack-icon">🎨</span>
+          <h3>Frontend</h3>
+          <p>Semantyczny HTML, nowoczesny CSS (grid, animacje, custom properties),
+             JavaScript i TypeScript. Lekkie strony bez zbędnych zależności.</p>
+        </div>
+        <div class="stack-card glow-card reveal">
+          <span class="stack-icon">⚙️</span>
+          <h3>Backend &amp; API</h3>
+          <p>Node.js, integracje z REST API (m.in. GitHub API na tej stronie),
+             obsługa formularzy, ogłoszeń i danych użytkowników.</p>
+        </div>
+        <div class="stack-card glow-card reveal">
+          <span class="stack-icon">🖥️</span>
+          <h3>DevOps &amp; serwer</h3>
+          <p>Własny VPS: Ubuntu, nginx, certyfikaty Let's Encrypt, deploye
+             skryptami, monitorowanie i utrzymanie kilku serwisów naraz.</p>
+        </div>
+      </div>
+    </section>
+
     <!-- ===== GITHUB ===== -->
     <section id="github" class="section container">
-      <div class="section-head">
+      <div class="section-head reveal">
         <h2>Open source</h2>
-        <p>Publiczne repozytoria pobierane na żywo z GitHuba — nowe projekty pojawią się tu automatycznie.</p>
+        <p>Publiczne repozytoria pobierane na żywo z GitHub API — nowe projekty pojawią się tu automatycznie.</p>
       </div>
+
       <div id="gh-stats" class="gh-stats" hidden>
-        <div class="stat"><span class="stat-num" id="stat-repos">–</span><span class="stat-label">repozytoriów</span></div>
-        <div class="stat"><span class="stat-num" id="stat-stars">–</span><span class="stat-label">gwiazdek</span></div>
-        <div class="stat"><span class="stat-num" id="stat-langs">–</span><span class="stat-label">języków</span></div>
+        <div class="stat glow-card"><span class="stat-num" data-count id="stat-repos">0</span><span class="stat-label">repozytoriów</span></div>
+        <div class="stat glow-card"><span class="stat-num" data-count id="stat-stars">0</span><span class="stat-label">gwiazdek</span></div>
+        <div class="stat glow-card"><span class="stat-num" data-count id="stat-langs">0</span><span class="stat-label">języków</span></div>
       </div>
+
+      <div id="lang-bar-wrap" class="lang-bar-wrap" hidden>
+        <div id="lang-bar" class="lang-bar" role="img" aria-label="Udział języków programowania w repozytoriach"></div>
+        <div id="lang-legend" class="lang-legend"></div>
+      </div>
+
       <div id="repo-grid" class="repo-grid" aria-live="polite">
         <div class="repo-skeleton"></div>
         <div class="repo-skeleton"></div>
         <div class="repo-skeleton"></div>
       </div>
+
       <p id="gh-error" class="gh-error" hidden>
         Nie udało się pobrać repozytoriów z GitHuba.
         <a href="https://github.com/wisniabobo?tab=repositories" target="_blank" rel="noopener">Zobacz je bezpośrednio →</a>
       </p>
+
+      <div id="activity" class="activity" hidden>
+        <h3 class="activity-title">Ostatnia aktywność</h3>
+        <ol id="activity-list" class="activity-list"></ol>
+      </div>
     </section>
 
     <!-- ===== KONTAKT ===== -->
     <section id="kontakt" class="section container">
-      <div class="contact-card reveal">
+      <div class="contact-card glow-card reveal">
         <h2>Masz pomysł na projekt?</h2>
-        <p>Chętnie porozmawiam o współpracy — od prostej strony po pełny serwis.</p>
+        <p>Chętnie porozmawiam o współpracy — od prostej strony po pełny serwis z własnym zapleczem.</p>
         <div class="hero-cta">
           <a href="mailto:tomasz.wiszniewski123@gmail.com" class="btn btn-primary">✉️ Napisz do mnie</a>
           <a href="https://github.com/wisniabobo" target="_blank" rel="noopener" class="btn btn-ghost">GitHub</a>
@@ -150,10 +239,10 @@
   <footer class="site-footer">
     <div class="container footer-inner">
       <span>© <span id="year">2026</span> Tomasz Wiszniewski · wisnia.dev</span>
-      <span class="footer-note">Zbudowane bez frameworków — czysty HTML, CSS i JS.</span>
+      <span class="footer-note">Zbudowane bez frameworków — czysty HTML, CSS i JS. <button id="cherry" class="cherry-btn" aria-label="Niespodzianka">🍒</button></span>
     </div>
   </footer>
 
-  <script src="script.js"></script>
+  <script src="script.js?v=dev"></script>
 </body>
 </html>
