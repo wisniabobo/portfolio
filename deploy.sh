@@ -8,7 +8,8 @@ WEBROOT="/var/www/html"
 FILES=(index.html style.css script.js)
 
 SSH_CMD=(ssh -o StrictHostKeyChecking=accept-new)
-SCP_CMD=(scp -o StrictHostKeyChecking=accept-new)
+# -O: legacy protokół scp — sshd na serwerze nie udostępnia subsystemu SFTP
+SCP_CMD=(scp -O -o StrictHostKeyChecking=accept-new)
 if [[ -n "${SSHPASS:-}" ]]; then
   SSH_CMD=(sshpass -e "${SSH_CMD[@]}")
   SCP_CMD=(sshpass -e "${SCP_CMD[@]}")
