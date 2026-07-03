@@ -36,8 +36,9 @@ echo "==> Wysyłanie plików"
 (cd "$STAGE" && "${SCP_CMD[@]}" "${FILES[@]}" "$SERVER:${WEBROOT}/")
 
 if [[ "${1:-}" == "--with-nginx" ]]; then
-  echo "==> Aktualizacja konfiguracji nginx (backup: ${NGINX_DEST}.bak)"
-  "${SSH_CMD[@]}" "$SERVER" "cp ${NGINX_DEST} ${NGINX_DEST}.bak 2>/dev/null || true"
+  # backup poza sites-enabled — nginx includuje stamtąd wszystko, także *.bak
+  echo "==> Aktualizacja konfiguracji nginx (backup: /etc/nginx/backup/)"
+  "${SSH_CMD[@]}" "$SERVER" "mkdir -p /etc/nginx/backup && cp ${NGINX_DEST} /etc/nginx/backup/wisnia.dev.conf.\$(date +%Y%m%d%H%M%S) 2>/dev/null || true"
   "${SCP_CMD[@]}" "$NGINX_CONF" "$SERVER:${NGINX_DEST}"
 fi
 
