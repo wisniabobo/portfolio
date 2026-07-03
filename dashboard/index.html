@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pl" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rynek krypto na żywo — dashboard | wisnia.dev</title>
+  <meta name="description" content="Dashboard rynku kryptowalut na żywo — ceny z Binance WebSocket, kapitalizacja i dane rynkowe z CoinGecko, indeks Fear & Greed. Zbudowany bez frameworków.">
+  <link rel="canonical" href="https://dashboard.wisnia.dev/">
+  <meta property="og:title" content="Rynek krypto na żywo — dashboard | wisnia.dev">
+  <meta property="og:description" content="Ceny tykające w czasie rzeczywistym, wykres świecowy, Fear & Greed — czysty HTML/CSS/JS.">
+  <meta name="theme-color" content="#0a0e17">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://api.coingecko.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=dev">
+  <script>
+    try { document.documentElement.dataset.theme = localStorage.getItem("theme") || "dark"; } catch (e) {}
+  </script>
+</head>
+<body>
+  <div class="bg-glow" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="logo" href="https://wisnia.dev">wisnia<span>.dev</span><em>/dashboard</em></a>
+      <div class="topbar-right">
+        <span id="ws-status" class="ws-status" data-state="connecting">
+          <span class="ws-dot"></span><span id="ws-label">łączenie…</span>
+        </span>
+        <button id="theme-toggle" class="theme-toggle" aria-label="Przełącz motyw jasny/ciemny">
+          <svg class="icon-moon" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          <svg class="icon-sun" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        </button>
+        <a class="back-link" href="https://wisnia.dev">← portfolio</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- taśma z cenami na żywo -->
+  <div class="tape" aria-label="Ceny kryptowalut na żywo">
+    <div id="tape-track" class="tape-track"></div>
+  </div>
+
+  <main class="wrap">
+    <!-- ===== statystyki rynku ===== -->
+    <section class="stats-row">
+      <article class="card stat-card" id="card-mcap">
+        <h2 class="card-label">Kapitalizacja rynku</h2>
+        <p class="big-num" id="mcap-value"><span class="skeleton-line"></span></p>
+        <p class="sub" id="mcap-change"></p>
+      </article>
+
+      <article class="card stat-card" id="card-dominance">
+        <h2 class="card-label">Dominacja BTC</h2>
+        <div class="dominance-wrap">
+          <svg viewBox="0 0 120 120" class="donut" aria-hidden="true">
+            <circle class="donut-bg" cx="60" cy="60" r="50"></circle>
+            <circle class="donut-fg" id="donut-btc" cx="60" cy="60" r="50"></circle>
+          </svg>
+          <div class="dominance-nums">
+            <p class="big-num" id="btc-dom"><span class="skeleton-line"></span></p>
+            <p class="sub" id="eth-dom"></p>
+          </div>
+        </div>
+      </article>
+
+      <article class="card stat-card" id="card-fng">
+        <h2 class="card-label">Fear &amp; Greed</h2>
+        <div class="gauge-wrap">
+          <svg viewBox="0 0 200 118" class="gauge" aria-hidden="true">
+            <defs>
+              <linearGradient id="gauge-grad" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#ff4d6b"/>
+                <stop offset="50%" stop-color="#ffc14d"/>
+                <stop offset="100%" stop-color="#3ddc84"/>
+              </linearGradient>
+            </defs>
+            <path class="gauge-bg" d="M 20 100 A 80 80 0 0 1 180 100"></path>
+            <path class="gauge-fg" id="gauge-arc" d="M 20 100 A 80 80 0 0 1 180 100" stroke="url(#gauge-grad)"></path>
+            <g id="gauge-needle" class="gauge-needle">
+              <line x1="100" y1="100" x2="100" y2="34"></line>
+              <circle cx="100" cy="100" r="6"></circle>
+            </g>
+          </svg>
+          <p class="big-num gauge-num"><span id="fng-value"><span class="skeleton-line"></span></span></p>
+          <p class="sub" id="fng-label"></p>
+        </div>
+      </article>
+    </section>
+
+    <!-- ===== wykres ===== -->
+    <section class="card chart-card">
+      <header class="chart-head">
+        <div class="chart-coin">
+          <img id="chart-icon" src="" alt="" width="34" height="34" hidden>
+          <div>
+            <h2 id="chart-name">Bitcoin <span class="pair" id="chart-pair">BTC/USDT</span></h2>
+            <p class="chart-price">
+              <span class="mono" id="chart-price">–</span>
+              <span id="chart-change" class="chg"></span>
+            </p>
+          </div>
+        </div>
+        <div class="chart-controls">
+          <div class="seg" role="group" aria-label="Interwał">
+            <button data-interval="15m">15m</button>
+            <button data-interval="1h" class="active">1H</button>
+            <button data-interval="4h">4H</button>
+            <button data-interval="1d">1D</button>
+            <button data-interval="1w">1T</button>
+          </div>
+          <div class="seg" role="group" aria-label="Typ wykresu">
+            <button data-type="candles" class="active" title="Świece">🕯️</button>
+            <button data-type="area" title="Linia">📈</button>
+          </div>
+        </div>
+      </header>
+      <div class="chart-body">
+        <canvas id="chart"></canvas>
+        <div id="chart-tip" class="chart-tip" hidden></div>
+        <p id="chart-hint" class="chart-hint">kliknij monetę w tabeli, aby zmienić wykres</p>
+      </div>
+    </section>
+
+    <!-- ===== tabela rynku ===== -->
+    <section class="card table-card">
+      <header class="table-head">
+        <h2>Top 20 kryptowalut</h2>
+        <input id="search" type="search" placeholder="Szukaj monety…" aria-label="Szukaj monety">
+      </header>
+      <div class="table-scroll">
+        <table id="market">
+          <thead>
+            <tr>
+              <th data-sort="market_cap_rank" class="sortable num sorted-asc">#</th>
+              <th data-sort="name" class="sortable">Moneta</th>
+              <th data-sort="current_price" class="sortable num">Cena</th>
+              <th data-sort="price_change_percentage_24h_in_currency" class="sortable num">24h</th>
+              <th data-sort="price_change_percentage_7d_in_currency" class="sortable num">7d</th>
+              <th data-sort="market_cap" class="sortable num">Kapitalizacja</th>
+              <th data-sort="total_volume" class="sortable num">Wolumen 24h</th>
+              <th class="num">7 dni</th>
+            </tr>
+          </thead>
+          <tbody id="market-body">
+            <tr class="skeleton-row"><td colspan="8"><span class="skeleton-line"></span></td></tr>
+            <tr class="skeleton-row"><td colspan="8"><span class="skeleton-line"></span></td></tr>
+            <tr class="skeleton-row"><td colspan="8"><span class="skeleton-line"></span></td></tr>
+            <tr class="skeleton-row"><td colspan="8"><span class="skeleton-line"></span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p id="table-error" class="table-error" hidden>Nie udało się pobrać danych rynkowych. Odśwież stronę za chwilę.</p>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <div class="wrap foot-inner">
+      <span>Dane: <a href="https://www.binance.com" target="_blank" rel="noopener">Binance</a> (WebSocket, na żywo) ·
+        <a href="https://www.coingecko.com" target="_blank" rel="noopener">CoinGecko</a> ·
+        <a href="https://alternative.me/crypto/fear-and-greed-index/" target="_blank" rel="noopener">alternative.me</a></span>
+      <span>Zbudowane bez frameworków · <a href="https://wisnia.dev">wisnia.dev</a></span>
+    </div>
+  </footer>
+
+  <script src="script.js?v=dev"></script>
+</body>
+</html>
