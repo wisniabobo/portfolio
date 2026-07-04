@@ -129,6 +129,11 @@ async function loadGlobal() {
   const chgEl = document.getElementById("mcap-change");
   chgEl.innerHTML = `<span class="chg ${pctClass(chg)}">${fmtPct(chg)}</span> przez 24h`;
 
+  const vol = g.total_volume.usd;
+  document.getElementById("vol-value").textContent = fmtBig(vol);
+  document.getElementById("vol-sub").textContent =
+    `${nf(1, 1).format((vol / mcap) * 100)}% kapitalizacji rynku`;
+
   const btc = g.market_cap_percentage.btc;
   const eth = g.market_cap_percentage.eth;
   document.getElementById("btc-dom").textContent = nf(1, 1).format(btc) + "%";
@@ -170,6 +175,8 @@ async function loadCoins() {
     price_change_percentage_7d_in_currency: c.price_change_percentage_7d_in_currency,
     market_cap: c.market_cap,
     total_volume: c.total_volume,
+    high_24h: c.high_24h,
+    low_24h: c.low_24h,
     sparkline: c.sparkline_in_7d?.price || [],
     binance: NO_BINANCE.has(c.symbol.toLowerCase()) ? null : c.symbol.toUpperCase() + "USDT",
   }));
@@ -291,7 +298,7 @@ function openTickerWS() {
   ws.onmessage = (e) => {
     const { data } = JSON.parse(e.data);
     if (!data || data.e !== "24hrMiniTicker") return;
-    onTick(data.s, Number(data.c), Number(data.o));
+    onTick(data.s, Number(data.c), Number(data.o), Number(data.h), Number(data.l));
   };
   ws.onclose = () => {
     setWSStatus("connecting", "wznawianie…");
@@ -308,13 +315,15 @@ function flash(el, up) {
   el.classList.add(up ? "flash-up" : "flash-down");
 }
 
-function onTick(symbol, price, open24) {
+function onTick(symbol, price, open24, high24, low24) {
   const coin = state.bySymbol.get(symbol);
   if (!coin) return;
   const prev = coin.current_price;
   const chg = open24 ? ((price - open24) / open24) * 100 : coin.price_change_percentage_24h_in_currency;
   coin.current_price = price;
   coin.price_change_percentage_24h_in_currency = chg;
+  if (high24) coin.high_24h = high24;
+  if (low24) coin.low_24h = low24;
 
   // wiersz tabeli
   if (coin.row?.isConnected) {
@@ -395,6 +404,11 @@ function updateChartHeader(price, chg, prev) {
   const chgEl = document.getElementById("chart-change");
   chgEl.textContent = fmtPct(chg);
   chgEl.className = `chg ${pctClass(chg)}`;
+  const sel = state.selected;
+  if (sel) {
+    document.getElementById("chart-high").textContent = fmtPrice(sel.high_24h);
+    document.getElementById("chart-low").textContent = fmtPrice(sel.low_24h);
+  }
 }
 
 function selectCoin(coin) {
@@ -556,6 +570,28 @@ function drawChart() {
       const yo = y(c.o), yc = y(c.c);
       ctx.fillRect(x(i) - bw / 2, Math.min(yo, yc), bw, Math.max(1, Math.abs(yc - yo)));
     }
+  }
+
+  // MA20 — prosta średnia krocząca z zamknięć
+  if (candles.length > 20) {
+    ctx.beginPath();
+    let sum = 0;
+    for (let i = 0; i < candles.length; i++) {
+      sum += candles[i].c;
+      if (i >= 20) sum -= candles[i - 20].c;
+      if (i >= 19) {
+        const yy = y(sum / 20);
+        i === 19 ? ctx.moveTo(x(i), yy) : ctx.lineTo(x(i), yy);
+      }
+    }
+    ctx.strokeStyle = "#ffc14d";
+    ctx.lineWidth = 1.4;
+    ctx.globalAlpha = 0.85;
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = "#ffc14d";
+    ctx.textAlign = "left";
+    ctx.fillText("MA20", pad.left + 6, pad.top + 12);
   }
 
   // linia ostatniej ceny
