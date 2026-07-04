@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pl" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Arcade — Saper i 2048 | wisnia.dev</title>
+  <meta name="description" content="Mini-arcade wisnia.dev: dopracowany Saper (pierwszy klik zawsze bezpieczny, chording, rekordy) i wciągające 2048 z combo. Czysty HTML/CSS/JS, działa na telefonie.">
+  <link rel="canonical" href="https://saper.wisnia.dev/">
+  <meta property="og:title" content="Arcade — Saper i 2048 | wisnia.dev">
+  <meta property="og:description" content="Zagraj w Sapera i 2048 — szybkie, ładne, bez reklam. Zbudowane bez frameworków.">
+  <meta name="theme-color" content="#0a0e17">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🕹️</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=dev">
+  <script>
+    try { document.documentElement.dataset.theme = localStorage.getItem("theme") || "dark"; } catch (e) {}
+  </script>
+</head>
+<body>
+  <div class="bg-glow" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="logo" href="https://wisnia.dev">wisnia<span>.dev</span><em>/arcade</em></a>
+      <nav class="game-tabs" role="tablist" aria-label="Wybór gry">
+        <button class="tab active" data-game="saper" role="tab" aria-selected="true">💣 Saper</button>
+        <button class="tab" data-game="g2048" role="tab" aria-selected="false">🧩 2048</button>
+      </nav>
+      <div class="topbar-right">
+        <button id="sound-toggle" class="round-btn" aria-label="Dźwięk włącz/wyłącz" title="Dźwięk">🔊</button>
+        <button id="theme-toggle" class="round-btn" aria-label="Przełącz motyw" title="Motyw">
+          <svg class="icon-moon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          <svg class="icon-sun" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- ============ SAPER ============ -->
+    <section id="view-saper" class="game-view" role="tabpanel">
+      <div class="game-card">
+        <div class="ms-toolbar">
+          <div class="seg" role="group" aria-label="Poziom trudności">
+            <button data-diff="easy" class="active">Łatwy</button>
+            <button data-diff="medium">Średni</button>
+            <button data-diff="hard">Trudny</button>
+          </div>
+          <div class="ms-stats">
+            <span class="pill mono" id="ms-mines" title="Pozostałe miny">💣 10</span>
+            <button class="pill face" id="ms-face" title="Nowa gra">🙂</button>
+            <span class="pill mono" id="ms-timer" title="Czas">⏱ 0</span>
+          </div>
+          <button class="pill flag-mode" id="ms-flagmode" aria-pressed="false" title="Tryb flagowania (dla dotyku)">🚩 tryb flag</button>
+        </div>
+
+        <div class="ms-board-wrap">
+          <div id="ms-board" class="ms-board" aria-label="Plansza sapera"></div>
+        </div>
+
+        <p class="game-foot">
+          <span class="hide-touch">LPM — odkryj · PPM — flaga · klik w cyfrę z kompletem flag — odkryj sąsiadów</span>
+          <span class="only-touch">dotknij — odkryj · przytrzymaj — flaga</span>
+          <span class="best mono" id="ms-best"></span>
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ 2048 ============ -->
+    <section id="view-g2048" class="game-view" hidden role="tabpanel">
+      <div class="game-card g2048-card">
+        <div class="g48-top">
+          <div class="g48-scores">
+            <div class="scorebox">
+              <span class="scorebox-label">Wynik</span>
+              <span class="scorebox-num mono" id="g48-score">0</span>
+              <span id="g48-pop" class="score-pop"></span>
+            </div>
+            <div class="scorebox">
+              <span class="scorebox-label">Rekord</span>
+              <span class="scorebox-num mono" id="g48-best">0</span>
+            </div>
+          </div>
+          <button class="pill" id="g48-new">↺ Nowa gra</button>
+        </div>
+
+        <div class="g48-wrap">
+          <div id="g48-board" class="g48-board" aria-label="Plansza 2048">
+            <div class="g48-bg"></div>
+            <div id="g48-tiles" class="g48-tiles"></div>
+            <div id="g48-overlay" class="g48-overlay" hidden>
+              <p id="g48-overlay-text">Koniec gry</p>
+              <div class="overlay-btns">
+                <button class="pill" id="g48-retry">↺ Jeszcze raz</button>
+                <button class="pill" id="g48-continue" hidden>▶ Graj dalej</button>
+              </div>
+            </div>
+          </div>
+          <div id="g48-combo" class="g48-combo" hidden>COMBO ×2</div>
+        </div>
+
+        <p class="game-foot">
+          <span class="hide-touch">strzałki / WASD — przesuwanie kafelków</span>
+          <span class="only-touch">przesuń palcem po planszy</span>
+          <span>łącz równe kafelki i dojdź do <b>2048</b></span>
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <div class="wrap foot-inner">
+      <span>🕹️ Arcade — bez reklam, bez śledzenia, bez frameworków.</span>
+      <span>Rekordy zapisują się lokalnie · <a href="https://wisnia.dev">wisnia.dev</a></span>
+    </div>
+  </footer>
+
+  <script src="app.js?v=dev"></script>
+  <script src="saper.js?v=dev"></script>
+  <script src="2048.js?v=dev"></script>
+</body>
+</html>
