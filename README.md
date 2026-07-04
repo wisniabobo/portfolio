@@ -32,6 +32,18 @@ Rynek kryptowalut na żywo (katalog `dashboard/`):
   ze sparkline'ami, sortowanie, wyszukiwarka; cache ze stale-fallbackiem.
 - **Fear & Greed** (alternative.me) na wskaźniku SVG.
 
+## Arcade — saper.wisnia.dev
+
+Dwie gry bez frameworków (katalog `saper/`):
+
+- **Saper** — bezpieczny pierwszy klik, flood fill z animacją kaskadową,
+  chording, 3 poziomy, tryb flag + długie przytrzymanie na dotyku,
+  rekordy czasu per poziom.
+- **2048** — animacje na transform, COMBO za wielokrotne łączenia,
+  swipe na mobile, rekord punktów.
+- Wspólne: dźwięki syntezowane Web Audio (bez plików), wibracje,
+  konfetti, motyw ciemny/jasny, zakładki z hash-routingiem.
+
 ## Struktura
 
 | Plik | Rola |
