@@ -11,8 +11,7 @@ WEBROOT="/var/www/html"
 FILES=(index.html 404.html style.css script.js robots.txt sitemap.xml)
 DASH_ROOT="/var/www/dashboard"
 DASH_FILES=(dashboard/index.html dashboard/style.css dashboard/script.js)
-SAPER_ROOT="/var/www/saper"
-SAPER_FILES=(saper/index.html saper/style.css saper/app.js saper/saper.js saper/2048.js)
+# saper.wisnia.dev.conf zostaje: sama subdomena przekierowuje na stronę główną
 NGINX_CONFS=(wisnia.dev.conf dashboard.wisnia.dev.conf saper.wisnia.dev.conf)
 
 SSH_CMD=(ssh -o StrictHostKeyChecking=accept-new)
@@ -27,19 +26,18 @@ fi
 VERSION=$(git rev-parse --short HEAD 2>/dev/null || date +%s)
 STAGE=$(mktemp -d)
 trap 'rm -rf "$STAGE"' EXIT
-mkdir -p "$STAGE/dashboard" "$STAGE/saper"
-for f in "${FILES[@]}" "${DASH_FILES[@]}" "${SAPER_FILES[@]}"; do
+mkdir -p "$STAGE/dashboard"
+for f in "${FILES[@]}" "${DASH_FILES[@]}"; do
   sed "s/?v=dev/?v=${VERSION}/g" "$f" > "$STAGE/$f"
 done
 
 echo "==> Wersja: ${VERSION}"
-echo "==> Czyszczenie ${WEBROOT}, ${DASH_ROOT} i ${SAPER_ROOT}"
-"${SSH_CMD[@]}" "$SERVER" "mkdir -p ${WEBROOT} ${DASH_ROOT} ${SAPER_ROOT} && rm -rf ${WEBROOT:?}/* ${DASH_ROOT:?}/* ${SAPER_ROOT:?}/*"
+echo "==> Czyszczenie ${WEBROOT} i ${DASH_ROOT}"
+"${SSH_CMD[@]}" "$SERVER" "mkdir -p ${WEBROOT} ${DASH_ROOT} && rm -rf ${WEBROOT:?}/* ${DASH_ROOT:?}/*"
 
 echo "==> Wysyłanie plików"
 (cd "$STAGE" && "${SCP_CMD[@]}" "${FILES[@]}" "$SERVER:${WEBROOT}/")
 (cd "$STAGE/dashboard" && "${SCP_CMD[@]}" index.html style.css script.js "$SERVER:${DASH_ROOT}/")
-(cd "$STAGE/saper" && "${SCP_CMD[@]}" index.html style.css app.js saper.js 2048.js "$SERVER:${SAPER_ROOT}/")
 
 if [[ "${1:-}" == "--with-nginx" ]]; then
   # backup poza sites-enabled — nginx includuje stamtąd wszystko, także *.bak
