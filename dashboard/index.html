@@ -115,24 +115,51 @@
           </div>
         </div>
         <div class="chart-controls">
-          <div class="seg" role="group" aria-label="Interwał">
-            <button data-interval="15m">15m</button>
-            <button data-interval="1h" class="active">1H</button>
-            <button data-interval="4h">4H</button>
-            <button data-interval="1d">1D</button>
-            <button data-interval="1w">1T</button>
+          <div class="seg" role="group" aria-label="Zakres">
+            <button data-range="1d">1D</button>
+            <button data-range="1w">1T</button>
+            <button data-range="1mo">1M</button>
+            <button data-range="3mo">3M</button>
+            <button data-range="1y">1R</button>
+            <button data-range="max">Max</button>
           </div>
-          <div class="seg" role="group" aria-label="Typ wykresu">
-            <button data-type="candles" class="active" title="Świece">🕯️</button>
-            <button data-type="area" title="Linia">📈</button>
-          </div>
+          <button class="tool-btn" id="chart-fs" title="Pełny ekran" aria-label="Pełny ekran">⛶</button>
         </div>
       </header>
+
+      <div class="chart-toolbar">
+        <div class="seg seg-scroll" role="group" aria-label="Interwał świecy">
+          <button data-interval="1m">1m</button>
+          <button data-interval="5m">5m</button>
+          <button data-interval="15m">15m</button>
+          <button data-interval="1h" class="active">1H</button>
+          <button data-interval="4h">4H</button>
+          <button data-interval="1d">1D</button>
+          <button data-interval="1w">1T</button>
+          <button data-interval="1M">1M</button>
+        </div>
+        <div class="seg" role="group" aria-label="Typ wykresu">
+          <button data-type="candles" class="active" title="Świece">🕯️</button>
+          <button data-type="area" title="Linia">📈</button>
+        </div>
+        <div class="seg" role="group" aria-label="Wskaźniki">
+          <button data-ind="ma20" class="active">MA20</button>
+          <button data-ind="ema50">EMA50</button>
+          <button data-ind="rsi">RSI</button>
+        </div>
+        <div class="seg" role="group" aria-label="Skala i zoom">
+          <button id="chart-log" title="Skala logarytmiczna">log</button>
+          <button id="zoom-out" title="Oddal" aria-label="Oddal">−</button>
+          <button id="zoom-in" title="Przybliż" aria-label="Przybliż">+</button>
+        </div>
+      </div>
+
       <div class="chart-body">
         <canvas id="chart"></canvas>
+        <div id="chart-legend" class="chart-legend mono" aria-live="off"></div>
         <div id="chart-tip" class="chart-tip" hidden></div>
-        <p id="chart-hint" class="chart-hint">kliknij monetę w tabeli, aby zmienić wykres</p>
       </div>
+      <p class="chart-hint-bar">przeciągnij — przesuwanie · kółko / przyciski − + — zoom · kliknij monetę w tabeli, aby zmienić parę</p>
     </section>
 
     <aside class="side-col">

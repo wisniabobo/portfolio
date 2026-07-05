@@ -32,6 +32,11 @@ const state = {
   chartType: "candles",
   candles: [],
   chartLive: false,
+  view: { start: 0, end: 0 }, // okno widocznych świec (indeksy)
+  follow: true,               // trzymaj się prawej krawędzi przy nowych świecach
+  indicators: { ma20: true, ema50: false, rsi: false },
+  logScale: false,
+  range: null,                // aktywny preset zakresu (1d/1w/1mo/3mo/1y/max)
   sortKey: "market_cap_rank",
   sortDir: 1,
   search: "",
@@ -363,11 +368,22 @@ function onTick(symbol, price, open24, high24, low24) {
 
 /* ---------- wykres: dane ---------- */
 
+// presety zakresu: interwał + liczba widocznych świec
+const RANGES = {
+  "1d": { interval: "15m", count: 96 },
+  "1w": { interval: "1h", count: 168 },
+  "1mo": { interval: "4h", count: 186 },
+  "3mo": { interval: "1d", count: 90 },
+  "1y": { interval: "1d", count: 365 },
+  "max": { interval: "1w", count: Infinity },
+};
+const DEFAULT_VISIBLE = 180;
+
 async function loadCandles() {
   const { selected, interval } = state;
   state.chartLive = false;
   try {
-    const res = await fetch(`${BINANCE_REST}/klines?symbol=${selected.binance}&interval=${interval}&limit=180`);
+    const res = await fetch(`${BINANCE_REST}/klines?symbol=${selected.binance}&interval=${interval}&limit=1000`);
     if (!res.ok) throw new Error(`Binance ${res.status}`);
     const raw = await res.json();
     state.candles = raw.map((k) => ({
@@ -376,14 +392,62 @@ async function loadCandles() {
     state.chartLive = true;
   } catch {
     // fallback: CoinGecko OHLC (bez wolumenu i bez live)
-    const days = { "15m": 1, "1h": 7, "4h": 30, "1d": 180, "1w": 365 }[interval] || 7;
+    const days = { "1m": 1, "5m": 1, "15m": 1, "1h": 7, "4h": 30, "1d": 180, "1w": 365, "1M": "max" }[interval] || 7;
     const raw = await cachedJSON(
       `${CG}/coins/${selected.id}/ohlc?vs_currency=usd&days=${days}`,
       `dash-ohlc-${selected.id}-${days}`, 5 * 60 * 1000
     );
     state.candles = raw.map((k) => ({ t: k[0], o: k[1], h: k[2], l: k[3], c: k[4], v: 0 }));
   }
+  const len = state.candles.length;
+  const wanted = state.range ? RANGES[state.range].count : DEFAULT_VISIBLE;
+  state.view.end = len;
+  state.view.start = Math.max(0, len - Math.min(wanted, len));
+  state.follow = true;
+  chart.hover = null;
   drawChart();
+}
+
+/* ---------- wskaźniki ---------- */
+
+function calcSMA(closes, n) {
+  const out = new Array(closes.length).fill(null);
+  let sum = 0;
+  for (let i = 0; i < closes.length; i++) {
+    sum += closes[i];
+    if (i >= n) sum -= closes[i - n];
+    if (i >= n - 1) out[i] = sum / n;
+  }
+  return out;
+}
+
+function calcEMA(closes, n) {
+  const out = new Array(closes.length).fill(null);
+  const k = 2 / (n + 1);
+  let ema = closes[0];
+  for (let i = 0; i < closes.length; i++) {
+    ema = i === 0 ? closes[0] : closes[i] * k + ema * (1 - k);
+    if (i >= n - 1) out[i] = ema;
+  }
+  return out;
+}
+
+function calcRSI(closes, n = 14) {
+  const out = new Array(closes.length).fill(null);
+  let avgG = 0, avgL = 0;
+  for (let i = 1; i < closes.length; i++) {
+    const d = closes[i] - closes[i - 1];
+    const g = Math.max(d, 0), l = Math.max(-d, 0);
+    if (i <= n) {
+      avgG += g / n; avgL += l / n;
+      if (i === n) out[i] = 100 - 100 / (1 + (avgL === 0 ? 100 : avgG / avgL));
+    } else {
+      avgG = (avgG * (n - 1) + g) / n;
+      avgL = (avgL * (n - 1) + l) / n;
+      out[i] = 100 - 100 / (1 + (avgL === 0 ? 100 : avgG / avgL));
+    }
+  }
+  return out;
 }
 
 /* ---------- WS wybranej pary: kline + arkusz zleceń + transakcje ---------- */
@@ -408,7 +472,10 @@ function openSymbolWS() {
       const candle = { t: k.t, o: +k.o, h: +k.h, l: +k.l, c: +k.c, v: +k.v };
       const last = state.candles[state.candles.length - 1];
       if (last && last.t === candle.t) state.candles[state.candles.length - 1] = candle;
-      else { state.candles.push(candle); state.candles.shift(); }
+      else {
+        state.candles.push(candle);
+        if (state.follow) { state.view.start++; state.view.end++; }
+      }
       drawChart();
     } else if (data.e === "aggTrade") {
       addTrade({ p: +data.p, q: +data.q, t: data.T, sell: data.m });
@@ -560,16 +627,35 @@ function selectCoin(coin) {
   bootstrapBookAndTrades();
 }
 
+function setActiveInterval(interval) {
+  document.querySelectorAll("[data-interval]").forEach((b) =>
+    b.classList.toggle("active", b.dataset.interval === interval));
+}
+
 function setupChartControls() {
   document.querySelectorAll("[data-interval]").forEach((btn) => {
     btn.addEventListener("click", () => {
-      document.querySelectorAll("[data-interval]").forEach((b) => b.classList.remove("active"));
-      btn.classList.add("active");
       state.interval = btn.dataset.interval;
+      state.range = null;
+      document.querySelectorAll("[data-range]").forEach((b) => b.classList.remove("active"));
+      setActiveInterval(state.interval);
       loadCandles();
       openSymbolWS(); // stream kline z nowym interwałem
     });
   });
+
+  document.querySelectorAll("[data-range]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      state.range = btn.dataset.range;
+      state.interval = RANGES[state.range].interval;
+      document.querySelectorAll("[data-range]").forEach((b) =>
+        b.classList.toggle("active", b === btn));
+      setActiveInterval(state.interval);
+      loadCandles();
+      openSymbolWS();
+    });
+  });
+
   document.querySelectorAll("[data-type]").forEach((btn) => {
     btn.addEventListener("click", () => {
       document.querySelectorAll("[data-type]").forEach((b) => b.classList.remove("active"));
@@ -578,6 +664,55 @@ function setupChartControls() {
       drawChart();
     });
   });
+
+  document.querySelectorAll("[data-ind]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const key = btn.dataset.ind;
+      state.indicators[key] = !state.indicators[key];
+      btn.classList.toggle("active", state.indicators[key]);
+      drawChart();
+    });
+  });
+
+  document.getElementById("chart-log").addEventListener("click", (e) => {
+    state.logScale = !state.logScale;
+    e.currentTarget.classList.toggle("active", state.logScale);
+    drawChart();
+  });
+
+  document.getElementById("zoom-in").addEventListener("click", () => zoomBy(1 / 1.35));
+  document.getElementById("zoom-out").addEventListener("click", () => zoomBy(1.35));
+
+  const fsBtn = document.getElementById("chart-fs");
+  fsBtn.addEventListener("click", () => {
+    const card = document.querySelector(".chart-card");
+    if (document.fullscreenElement) document.exitFullscreen();
+    else card.requestFullscreen?.().catch(() => {});
+  });
+}
+
+function clampView(len) {
+  const v = state.view;
+  const span = Math.max(20, Math.min(v.end - v.start, len));
+  if (v.end > len) v.end = len;
+  if (v.end < span) v.end = Math.min(span, len);
+  v.start = Math.max(0, v.end - span);
+}
+
+function zoomBy(factor, anchorIdx = null) {
+  const len = state.candles.length;
+  if (!len) return;
+  const v = state.view;
+  const span = v.end - v.start;
+  const newSpan = Math.round(Math.min(Math.max(span * factor, 20), len));
+  const anchor = anchorIdx ?? v.end - 1; // domyślnie prawa krawędź
+  const frac = span ? (anchor - v.start) / span : 1;
+  v.start = Math.round(anchor - frac * newSpan);
+  v.end = v.start + newSpan;
+  if (v.end > len) { v.end = len; v.start = len - newSpan; }
+  if (v.start < 0) { v.start = 0; v.end = newSpan; }
+  state.follow = v.end >= len;
+  drawChart();
 }
 
 /* ---------- wykres: renderer canvas ---------- */
@@ -585,31 +720,28 @@ function setupChartControls() {
 const chart = {
   canvas: null,
   ctx: null,
-  pad: { top: 14, right: 74, bottom: 26, left: 10 },
-  hover: null, // indeks świecy pod kursorem
+  pad: { top: 8, right: 76, bottom: 22, left: 8 },
+  hover: null,   // absolutny indeks świecy pod kursorem
+  hoverY: null,  // pozycja Y kursora (crosshair poziomy)
+  geom: null,    // geometria ostatniego rysowania (dla interakcji)
 };
 
 function cssVar(name) {
   return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 }
 
-function chartArea() {
-  const { canvas, pad } = chart;
-  const w = canvas.clientWidth, h = canvas.clientHeight;
-  return {
-    w, h,
-    plotW: w - pad.left - pad.right,
-    plotH: h - pad.top - pad.bottom - 44, // 44px na wolumen
-    volH: 38,
-  };
-}
-
 function drawChart() {
   const { canvas, ctx, pad } = chart;
   if (!canvas || !state.candles.length) return;
 
+  const candles = state.candles;
+  const len = candles.length;
+  clampView(len);
+  const { start, end } = state.view;
+  const span = end - start;
+
   const dpr = window.devicePixelRatio || 1;
-  const { w, h, plotW, plotH, volH } = chartArea();
+  const w = canvas.clientWidth, h = canvas.clientHeight;
   if (canvas.width !== w * dpr || canvas.height !== h * dpr) {
     canvas.width = w * dpr;
     canvas.height = h * dpr;
@@ -617,25 +749,49 @@ function drawChart() {
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   ctx.clearRect(0, 0, w, h);
 
-  const candles = state.candles;
   const up = cssVar("--up") || "#3ddc84";
   const down = cssVar("--down") || "#ff4d6b";
   const dim = cssVar("--text-dim") || "#9aa4b8";
   const grid = cssVar("--border") || "rgba(255,255,255,0.09)";
   const accent2 = cssVar("--accent-2") || "#7c5cff";
+  const MA_COL = "#ffc14d", EMA_COL = "#4da3ff";
 
+  // układ pionowy: cena | wolumen | RSI
+  const plotW = w - pad.left - pad.right;
+  const volH = 36;
+  const rsiH = state.indicators.rsi ? 62 : 0;
+  const plotH = h - pad.top - pad.bottom - volH - 6 - (rsiH ? rsiH + 8 : 0);
+
+  // zakres cen z widocznego okna
   let min = Infinity, max = -Infinity, maxV = 0;
-  for (const c of candles) {
+  for (let i = start; i < end; i++) {
+    const c = candles[i];
     if (c.l < min) min = c.l;
     if (c.h > max) max = c.h;
     if (c.v > maxV) maxV = c.v;
   }
-  const span = max - min || 1;
-  min -= span * 0.04; max += span * 0.04;
+  const padPct = 0.04;
+  if (state.logScale) {
+    min = Math.max(min, 1e-9);
+    const lmin0 = Math.log(min), lmax0 = Math.log(max);
+    const lpad = (lmax0 - lmin0 || 1) * padPct;
+    var lmin = lmin0 - lpad, lmax = lmax0 + lpad;
+  } else {
+    const s = max - min || 1;
+    min -= s * padPct; max += s * padPct;
+  }
 
-  const x = (i) => pad.left + ((i + 0.5) / candles.length) * plotW;
-  const y = (p) => pad.top + (1 - (p - min) / (max - min)) * plotH;
+  const x = (i) => pad.left + ((i - start + 0.5) / span) * plotW;
+  const y = state.logScale
+    ? (p) => pad.top + (1 - (Math.log(Math.max(p, 1e-9)) - lmin) / (lmax - lmin)) * plotH
+    : (p) => pad.top + (1 - (p - min) / (max - min)) * plotH;
+  const priceAtY = state.logScale
+    ? (yy) => Math.exp(lmin + (1 - (yy - pad.top) / plotH) * (lmax - lmin))
+    : (yy) => min + (1 - (yy - pad.top) / plotH) * (max - min);
   const volY = pad.top + plotH + 6;
+  const rsiY = volY + volH + 8;
+
+  chart.geom = { plotW, plotH, volH, rsiH, x, y, priceAtY, start, end, span, w, h };
 
   // siatka + etykiety cen
   ctx.strokeStyle = grid;
@@ -645,30 +801,30 @@ function drawChart() {
   ctx.lineWidth = 1;
   const steps = 5;
   for (let i = 0; i <= steps; i++) {
-    const p = min + ((max - min) * i) / steps;
-    const yy = y(p);
+    const yy = pad.top + (plotH * i) / steps;
     ctx.beginPath();
     ctx.moveTo(pad.left, yy);
     ctx.lineTo(pad.left + plotW, yy);
     ctx.stroke();
-    ctx.fillText(fmtPrice(p).replace(" $", ""), pad.left + plotW + 8, yy + 4);
+    ctx.fillText(fmtPrice(priceAtY(yy)).replace(" $", ""), pad.left + plotW + 8, yy + 4);
   }
 
   // etykiety czasu
   ctx.textAlign = "center";
-  const tStep = Math.ceil(candles.length / 6);
-  for (let i = 0; i < candles.length; i += tStep) {
+  const tStep = Math.max(1, Math.ceil(span / 6));
+  const longIv = ["1d", "1w", "1M"].includes(state.interval);
+  for (let i = start; i < end; i += tStep) {
     const d = new Date(candles[i].t);
-    const label = ["1d", "1w"].includes(state.interval)
-      ? d.toLocaleDateString("pl-PL", { day: "2-digit", month: "2-digit" })
+    const label = longIv
+      ? d.toLocaleDateString("pl-PL", { day: "2-digit", month: "2-digit", year: span > 300 ? "2-digit" : undefined })
       : d.toLocaleTimeString("pl-PL", { hour: "2-digit", minute: "2-digit" });
     ctx.fillText(label, x(i), h - 8);
   }
 
   // wolumen
   if (maxV > 0) {
-    const bw = Math.max(1, (plotW / candles.length) * 0.6);
-    for (let i = 0; i < candles.length; i++) {
+    const bw = Math.max(1, (plotW / span) * 0.6);
+    for (let i = start; i < end; i++) {
       const c = candles[i];
       const vh = (c.v / maxV) * volH;
       ctx.fillStyle = c.c >= c.o ? up + "44" : down + "44";
@@ -676,109 +832,222 @@ function drawChart() {
     }
   }
 
+  // cena: świece albo linia
   if (state.chartType === "area") {
-    // linia + gradient
     ctx.beginPath();
-    candles.forEach((c, i) => (i ? ctx.lineTo(x(i), y(c.c)) : ctx.moveTo(x(i), y(c.c))));
+    for (let i = start; i < end; i++) {
+      i === start ? ctx.moveTo(x(i), y(candles[i].c)) : ctx.lineTo(x(i), y(candles[i].c));
+    }
     ctx.strokeStyle = accent2;
     ctx.lineWidth = 2;
     ctx.stroke();
     const g = ctx.createLinearGradient(0, pad.top, 0, pad.top + plotH);
     g.addColorStop(0, accent2 + "55");
     g.addColorStop(1, accent2 + "00");
-    ctx.lineTo(x(candles.length - 1), pad.top + plotH);
-    ctx.lineTo(x(0), pad.top + plotH);
+    ctx.lineTo(x(end - 1), pad.top + plotH);
+    ctx.lineTo(x(start), pad.top + plotH);
     ctx.closePath();
     ctx.fillStyle = g;
     ctx.fill();
   } else {
-    // świece
-    const bw = Math.max(1.5, (plotW / candles.length) * 0.62);
-    for (let i = 0; i < candles.length; i++) {
+    const bw = Math.max(1, (plotW / span) * 0.62);
+    for (let i = start; i < end; i++) {
       const c = candles[i];
       const col = c.c >= c.o ? up : down;
       ctx.strokeStyle = col;
       ctx.fillStyle = col;
       ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(x(i), y(c.h));
-      ctx.lineTo(x(i), y(c.l));
-      ctx.stroke();
+      if (bw > 2.5) {
+        ctx.beginPath();
+        ctx.moveTo(x(i), y(c.h));
+        ctx.lineTo(x(i), y(c.l));
+        ctx.stroke();
+      }
       const yo = y(c.o), yc = y(c.c);
       ctx.fillRect(x(i) - bw / 2, Math.min(yo, yc), bw, Math.max(1, Math.abs(yc - yo)));
     }
   }
 
-  // MA20 — prosta średnia krocząca z zamknięć
-  if (candles.length > 20) {
+  // wskaźniki na cenie
+  const closes = candles.map((c) => c.c);
+  const drawLine = (vals, color) => {
     ctx.beginPath();
-    let sum = 0;
-    for (let i = 0; i < candles.length; i++) {
-      sum += candles[i].c;
-      if (i >= 20) sum -= candles[i - 20].c;
-      if (i >= 19) {
-        const yy = y(sum / 20);
-        i === 19 ? ctx.moveTo(x(i), yy) : ctx.lineTo(x(i), yy);
-      }
+    let started = false;
+    for (let i = start; i < end; i++) {
+      if (vals[i] == null) continue;
+      const yy = y(vals[i]);
+      started ? ctx.lineTo(x(i), yy) : ctx.moveTo(x(i), yy);
+      started = true;
     }
-    ctx.strokeStyle = "#ffc14d";
+    ctx.strokeStyle = color;
     ctx.lineWidth = 1.4;
-    ctx.globalAlpha = 0.85;
+    ctx.globalAlpha = 0.9;
     ctx.stroke();
     ctx.globalAlpha = 1;
-    ctx.fillStyle = "#ffc14d";
+  };
+  let ma = null, ema = null, rsi = null;
+  if (state.indicators.ma20 && len > 20) { ma = calcSMA(closes, 20); drawLine(ma, MA_COL); }
+  if (state.indicators.ema50 && len > 50) { ema = calcEMA(closes, 50); drawLine(ema, EMA_COL); }
+
+  // panel RSI
+  if (rsiH) {
+    rsi = calcRSI(closes);
+    ctx.strokeStyle = grid;
+    ctx.strokeRect(pad.left, rsiY, plotW, rsiH);
+    const ry = (v) => rsiY + (1 - v / 100) * rsiH;
+    ctx.setLineDash([3, 3]);
+    for (const lvl of [30, 70]) {
+      ctx.beginPath();
+      ctx.moveTo(pad.left, ry(lvl));
+      ctx.lineTo(pad.left + plotW, ry(lvl));
+      ctx.stroke();
+    }
+    ctx.setLineDash([]);
+    ctx.fillStyle = dim;
     ctx.textAlign = "left";
-    ctx.fillText("MA20", pad.left + 6, pad.top + 12);
+    ctx.fillText("RSI 14", pad.left + 6, rsiY + 12);
+    ctx.fillText("70", pad.left + plotW + 8, ry(70) + 4);
+    ctx.fillText("30", pad.left + plotW + 8, ry(30) + 4);
+    ctx.beginPath();
+    let started = false;
+    for (let i = start; i < end; i++) {
+      if (rsi[i] == null) continue;
+      started ? ctx.lineTo(x(i), ry(rsi[i])) : ctx.moveTo(x(i), ry(rsi[i]));
+      started = true;
+    }
+    ctx.strokeStyle = accent2;
+    ctx.lineWidth = 1.4;
+    ctx.stroke();
   }
 
-  // linia ostatniej ceny
-  const last = candles[candles.length - 1];
-  const ly = y(last.c);
-  ctx.setLineDash([4, 4]);
-  ctx.strokeStyle = last.c >= last.o ? up : down;
-  ctx.beginPath();
-  ctx.moveTo(pad.left, ly);
-  ctx.lineTo(pad.left + plotW, ly);
-  ctx.stroke();
-  ctx.setLineDash([]);
-  ctx.fillStyle = last.c >= last.o ? up : down;
-  ctx.fillRect(pad.left + plotW + 2, ly - 9, chart.pad.right - 6, 18);
-  ctx.fillStyle = "#0a0e17";
-  ctx.textAlign = "left";
-  ctx.fillText(fmtPrice(last.c).replace(" $", ""), pad.left + plotW + 8, ly + 4);
+  // linia ostatniej ceny (gdy widać prawą krawędź)
+  const last = candles[len - 1];
+  if (end >= len) {
+    const lyRaw = y(last.c);
+    const ly = Math.max(pad.top, Math.min(pad.top + plotH, lyRaw));
+    ctx.setLineDash([4, 4]);
+    ctx.strokeStyle = last.c >= last.o ? up : down;
+    ctx.beginPath();
+    ctx.moveTo(pad.left, ly);
+    ctx.lineTo(pad.left + plotW, ly);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = last.c >= last.o ? up : down;
+    ctx.fillRect(pad.left + plotW + 2, ly - 9, pad.right - 6, 18);
+    ctx.fillStyle = "#0a0e17";
+    ctx.textAlign = "left";
+    ctx.fillText(fmtPrice(last.c).replace(" $", ""), pad.left + plotW + 8, ly + 4);
+  }
 
-  // crosshair
-  if (chart.hover != null && candles[chart.hover]) {
+  // crosshair (pion + poziom z ceną)
+  if (chart.hover != null && candles[chart.hover] && chart.hover >= start && chart.hover < end) {
     const i = chart.hover;
     ctx.strokeStyle = dim;
     ctx.setLineDash([3, 3]);
     ctx.beginPath();
     ctx.moveTo(x(i), pad.top);
-    ctx.lineTo(x(i), pad.top + plotH + volH + 6);
+    ctx.lineTo(x(i), rsiH ? rsiY + rsiH : volY + volH);
     ctx.stroke();
+    if (chart.hoverY != null && chart.hoverY >= pad.top && chart.hoverY <= pad.top + plotH) {
+      ctx.beginPath();
+      ctx.moveTo(pad.left, chart.hoverY);
+      ctx.lineTo(pad.left + plotW, chart.hoverY);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = dim;
+      ctx.fillRect(pad.left + plotW + 2, chart.hoverY - 9, pad.right - 6, 18);
+      ctx.fillStyle = cssVar("--bg") || "#0a0e17";
+      ctx.textAlign = "left";
+      ctx.fillText(fmtPrice(priceAtY(chart.hoverY)).replace(" $", ""), pad.left + plotW + 8, chart.hoverY + 4);
+    }
     ctx.setLineDash([]);
   }
+
+  updateLegend(ma, ema, rsi);
+}
+
+/* legenda OHLC (jak na platformach tradingowych) */
+function updateLegend(ma, ema, rsi) {
+  const el = document.getElementById("chart-legend");
+  const candles = state.candles;
+  if (!candles.length) { el.innerHTML = ""; return; }
+  const i = chart.hover != null && candles[chart.hover] ? chart.hover : candles.length - 1;
+  const c = candles[i];
+  const chg = ((c.c - c.o) / c.o) * 100;
+  const cls = chg >= 0 ? "up" : "down";
+  const p = (v) => fmtPrice(v).replace(" $", "");
+  let html =
+    `<b>${state.selected ? state.selected.symbol.toUpperCase() + "/USDT" : ""}</b> · ${state.interval} ` +
+    `&nbsp;O <span class="${cls}">${p(c.o)}</span> H <span class="${cls}">${p(c.h)}</span> ` +
+    `L <span class="${cls}">${p(c.l)}</span> C <span class="${cls}">${p(c.c)}</span> ` +
+    `<span class="${cls}">${fmtPct(chg)}</span>`;
+  const parts = [];
+  if (ma && ma[i] != null) parts.push(`<span class="ma">MA20 ${p(ma[i])}</span>`);
+  if (ema && ema[i] != null) parts.push(`<span class="ema">EMA50 ${p(ema[i])}</span>`);
+  if (rsi && rsi[i] != null) parts.push(`RSI ${nf(1, 1).format(rsi[i])}`);
+  if (parts.length) html += `<br>${parts.join(" · ")}`;
+  el.innerHTML = html;
 }
 
 function setupChartCanvas() {
   chart.canvas = document.getElementById("chart");
   chart.ctx = chart.canvas.getContext("2d");
+  const canvas = chart.canvas;
 
-  new ResizeObserver(() => drawChart()).observe(chart.canvas.parentElement);
+  new ResizeObserver(() => drawChart()).observe(canvas.parentElement);
+  document.addEventListener("fullscreenchange", () => setTimeout(drawChart, 60));
 
   const tip = document.getElementById("chart-tip");
-  chart.canvas.addEventListener("pointermove", (e) => {
+  let drag = null;
+
+  const idxAt = (clientX) => {
+    const r = canvas.getBoundingClientRect();
+    const g = chart.geom;
+    if (!g) return null;
+    const i = g.start + Math.floor(((clientX - r.left - chart.pad.left) / g.plotW) * g.span);
+    return i >= 0 && i < state.candles.length ? i : null;
+  };
+
+  canvas.addEventListener("pointerdown", (e) => {
     if (!state.candles.length) return;
-    const r = chart.canvas.getBoundingClientRect();
-    const { plotW } = chartArea();
-    const i = Math.floor(((e.clientX - r.left - chart.pad.left) / plotW) * state.candles.length);
-    if (i < 0 || i >= state.candles.length) { chart.hover = null; tip.hidden = true; drawChart(); return; }
+    drag = { x: e.clientX, start: state.view.start, end: state.view.end, moved: false };
+    canvas.setPointerCapture(e.pointerId);
+  });
+
+  canvas.addEventListener("pointermove", (e) => {
+    if (!state.candles.length || !chart.geom) return;
+    const g = chart.geom;
+
+    if (drag) {
+      const dx = e.clientX - drag.x;
+      if (Math.abs(dx) > 3) {
+        drag.moved = true;
+        canvas.classList.add("dragging");
+        tip.hidden = true;
+        chart.hover = null;
+        const len = state.candles.length;
+        const span = drag.end - drag.start;
+        const shift = Math.round(dx / (g.plotW / span));
+        let ns = Math.max(0, Math.min(drag.start - shift, len - span));
+        state.view.start = ns;
+        state.view.end = ns + span;
+        state.follow = state.view.end >= len;
+        drawChart();
+      }
+      return;
+    }
+
+    // crosshair + tooltip
+    const r = canvas.getBoundingClientRect();
+    const i = idxAt(e.clientX);
+    if (i == null) { chart.hover = null; tip.hidden = true; drawChart(); return; }
     chart.hover = i;
+    chart.hoverY = e.clientY - r.top;
     const c = state.candles[i];
     const d = new Date(c.t);
     const dir = c.c >= c.o ? "up" : "down";
     tip.innerHTML =
-      `<strong>${d.toLocaleString("pl-PL", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}</strong><br>
+      `<strong>${d.toLocaleString("pl-PL", { day: "2-digit", month: "2-digit", year: "2-digit", hour: "2-digit", minute: "2-digit" })}</strong><br>
        O <span class="${dir}">${fmtPrice(c.o)}</span> · H <span class="${dir}">${fmtPrice(c.h)}</span><br>
        L <span class="${dir}">${fmtPrice(c.l)}</span> · C <span class="${dir}">${fmtPrice(c.c)}</span>` +
       (c.v ? `<br>Vol ${nf(0, 0).format(c.v)}` : "");
@@ -789,11 +1058,28 @@ function setupChartCanvas() {
     tip.style.top = `${Math.max(0, ty)}px`;
     drawChart();
   });
-  chart.canvas.addEventListener("pointerleave", () => {
+
+  const endDrag = () => {
+    drag = null;
+    canvas.classList.remove("dragging");
+  };
+  canvas.addEventListener("pointerup", endDrag);
+  canvas.addEventListener("pointercancel", endDrag);
+  canvas.addEventListener("pointerleave", () => {
+    endDrag();
     chart.hover = null;
+    chart.hoverY = null;
     tip.hidden = true;
     drawChart();
   });
+
+  // zoom kółkiem wokół kursora
+  canvas.addEventListener("wheel", (e) => {
+    if (!state.candles.length) return;
+    e.preventDefault();
+    const anchor = idxAt(e.clientX) ?? state.view.end - 1;
+    zoomBy(e.deltaY > 0 ? 1.18 : 1 / 1.18, anchor);
+  }, { passive: false });
 }
 
 /* ---------- start ---------- */
