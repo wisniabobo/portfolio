@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kawiarnia Pod Wiśnią — przykładowa strona-wizytówka | wisnia.dev</title>
+  <meta name="description" content="Przykładowa strona-wizytówka wykonana przez wisnia.dev — fikcyjna kawiarnia Pod Wiśnią w Opolu. Tak może wyglądać strona Twojej firmy.">
+  <meta name="robots" content="noindex, follow">
+  <link rel="canonical" href="https://wisnia.dev/wizytowka/">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☕</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=dev">
+</head>
+<body>
+  <!-- pasek informujący, że to szablon demo -->
+  <a class="demo-ribbon" href="https://wisnia.dev">
+    🍒 Przykładowa strona-wizytówka — tak może wyglądać strona <b>Twojej firmy</b>. Projekt i wykonanie: <b>wisnia.dev</b> →
+  </a>
+
+  <header class="topbar" id="top">
+    <div class="wrap topbar-inner">
+      <a class="logo" href="#top">Pod&nbsp;Wiśnią <span aria-hidden="true">🍒</span></a>
+      <nav class="nav" id="nav" aria-label="Menu główne">
+        <a href="#o-nas">O nas</a>
+        <a href="#menu">Menu</a>
+        <a href="#opinie">Opinie</a>
+        <a href="#kontakt">Kontakt</a>
+        <a class="btn btn-solid nav-cta" href="tel:+48770000000">📞 Zarezerwuj stolik</a>
+      </nav>
+      <button class="burger" id="burger" aria-label="Otwórz menu" aria-expanded="false" aria-controls="nav">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <!-- ===== HERO ===== -->
+    <section class="hero">
+      <div class="wrap hero-inner">
+        <div class="hero-text">
+          <p class="overline reveal">Kawiarnia rzemieślnicza · Opole</p>
+          <h1 class="reveal">Kawa, która smakuje<br>jak <em>dobre popołudnie</em></h1>
+          <p class="lead reveal">
+            Wypalamy ziarna lokalnie, ciasta pieczemy każdego ranka,
+            a wiśniowa szarlotka znika przed południem. Wpadnij — drugi
+            stolik od okna czeka na Ciebie.
+          </p>
+          <div class="cta-row reveal">
+            <a class="btn btn-solid" href="#menu">Zobacz menu</a>
+            <a class="btn btn-line" href="#kontakt">Znajdź nas</a>
+          </div>
+          <ul class="badges reveal">
+            <li>☕ Kawa speciality</li>
+            <li>🥐 Własne wypieki</li>
+            <li>🐶 Przyjaźni zwierzakom</li>
+          </ul>
+        </div>
+        <div class="hero-visual" aria-hidden="true">
+          <div class="cup-card">
+            <span class="cup-steam s1"></span>
+            <span class="cup-steam s2"></span>
+            <span class="cup-steam s3"></span>
+            <span class="cup-emoji">☕</span>
+            <p class="cup-caption">Wiśniowe latte<br><b>od 14 zł</b></p>
+          </div>
+          <div class="chip chip-1">🍰 Szarlotka dnia</div>
+          <div class="chip chip-2">⏰ Otwarte do 21:00</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== O NAS ===== -->
+    <section id="o-nas" class="section">
+      <div class="wrap grid-2">
+        <div class="reveal">
+          <p class="overline">O nas</p>
+          <h2>Mała kawiarnia,<br>wielka obsesja na punkcie smaku</h2>
+          <p class="body-text">
+            Zaczęło się od jednego ekspresu i przepisu na szarlotkę po babci.
+            Dziś „Pod Wiśnią" to miejsce, w którym poranna kawa płynnie
+            przechodzi w popołudniowe rozmowy — a my wciąż osobiście wybieramy
+            każde ziarno i każdy owoc do naszych ciast.
+          </p>
+          <p class="body-text">
+            Nie spieszymy się. I Tobie też nie każemy.
+          </p>
+        </div>
+        <ul class="stats reveal">
+          <li><b>2019</b><span>z nami od</span></li>
+          <li><b>12</b><span>rodzajów kawy</span></li>
+          <li><b>100%</b><span>wypieków z własnego pieca</span></li>
+          <li><b>1</b><span>legendarna szarlotka</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ===== MENU ===== -->
+    <section id="menu" class="section section-alt">
+      <div class="wrap">
+        <p class="overline center reveal">Menu</p>
+        <h2 class="center reveal">Co dziś podajemy</h2>
+        <div class="menu-grid">
+          <div class="menu-card reveal">
+            <h3>☕ Kawa &amp; napoje</h3>
+            <ul class="price-list">
+              <li><span>Espresso</span><i></i><span>9 zł</span></li>
+              <li><span>Cappuccino</span><i></i><span>13 zł</span></li>
+              <li><span>Wiśniowe latte <em>hit!</em></span><i></i><span>14 zł</span></li>
+              <li><span>Cold brew</span><i></i><span>15 zł</span></li>
+              <li><span>Herbata liściasta</span><i></i><span>11 zł</span></li>
+              <li><span>Domowa lemoniada</span><i></i><span>12 zł</span></li>
+            </ul>
+          </div>
+          <div class="menu-card reveal">
+            <h3>🍰 Coś słodkiego</h3>
+            <ul class="price-list">
+              <li><span>Szarlotka z wiśnią <em>hit!</em></span><i></i><span>16 zł</span></li>
+              <li><span>Sernik baskijski</span><i></i><span>17 zł</span></li>
+              <li><span>Rogalik maślany</span><i></i><span>8 zł</span></li>
+              <li><span>Tarta sezonowa</span><i></i><span>15 zł</span></li>
+              <li><span>Ciastko owsiane</span><i></i><span>6 zł</span></li>
+            </ul>
+          </div>
+        </div>
+        <p class="menu-note reveal">Menu zmienia się z sezonem — aktualności znajdziesz na naszym Instagramie.</p>
+      </div>
+    </section>
+
+    <!-- ===== DLACZEGO MY ===== -->
+    <section class="section">
+      <div class="wrap">
+        <p class="overline center reveal">Dlaczego my</p>
+        <h2 class="center reveal">Trzy powody, żeby wpaść</h2>
+        <div class="features">
+          <div class="feature reveal">
+            <span class="feature-icon">🔥</span>
+            <h3>Świeżo palona kawa</h3>
+            <p>Ziarna z małych palarni, mielone dopiero przy zamówieniu.
+               Poczujesz różnicę przy pierwszym łyku.</p>
+          </div>
+          <div class="feature reveal">
+            <span class="feature-icon">🧺</span>
+            <h3>Lokalne składniki</h3>
+            <p>Owoce od sadowników z okolic Opola, mąka z pobliskiego młyna,
+               miód z pasieki za miastem.</p>
+          </div>
+          <div class="feature reveal">
+            <span class="feature-icon">🛋️</span>
+            <h3>Miejsce, nie lokal</h3>
+            <p>Gniazdka przy każdym stoliku, półka z książkami na wymianę
+               i zero pośpiechu. Zostań, ile chcesz.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== OPINIE ===== -->
+    <section id="opinie" class="section section-alt">
+      <div class="wrap">
+        <p class="overline center reveal">Opinie</p>
+        <h2 class="center reveal">Goście mówią za nas</h2>
+        <div class="reviews">
+          <figure class="review reveal">
+            <p class="stars" aria-label="5 na 5 gwiazdek">★★★★★</p>
+            <blockquote>Najlepsza szarlotka w Opolu, kropka. Przyjeżdżam
+              specjalnie z drugiego końca miasta.</blockquote>
+            <figcaption>— Magda</figcaption>
+          </figure>
+          <figure class="review reveal">
+            <p class="stars" aria-label="5 na 5 gwiazdek">★★★★★</p>
+            <blockquote>Pracuję tu zdalnie 2–3 razy w tygodniu. Szybkie wifi,
+              cicho, a latte robią lepsze niż w sieciówkach.</blockquote>
+            <figcaption>— Tomek</figcaption>
+          </figure>
+          <figure class="review reveal">
+            <p class="stars" aria-label="5 na 5 gwiazdek">★★★★★</p>
+            <blockquote>Obsługa pamięta, że piję cappuccino na owsianym.
+              Takich miejsc już się nie robi.</blockquote>
+            <figcaption>— Karolina</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== KONTAKT ===== -->
+    <section id="kontakt" class="section">
+      <div class="wrap grid-2">
+        <div class="reveal">
+          <p class="overline">Kontakt</p>
+          <h2>Wpadnij na kawę</h2>
+          <ul class="contact-list">
+            <li>📍 ul. Wiśniowa 7, 45-000 Opole</li>
+            <li>📞 <a href="tel:+48770000000">+48 77 000 00 00</a></li>
+            <li>✉️ <a href="mailto:kontakt@podwisnia.example">kontakt@podwisnia.example</a></li>
+          </ul>
+          <a class="btn btn-solid" href="https://maps.google.com/?q=Rynek,+Opole" target="_blank" rel="noopener">Prowadź do nas →</a>
+        </div>
+        <div class="hours-card reveal">
+          <h3>Godziny otwarcia</h3>
+          <table class="hours">
+            <tr><td>pon – pt</td><td>7:30 – 21:00</td></tr>
+            <tr><td>sobota</td><td>9:00 – 21:00</td></tr>
+            <tr><td>niedziela</td><td>10:00 – 18:00</td></tr>
+          </table>
+          <p class="hours-note">☀️ Latem ogródek otwarty do zmroku</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year">2026</span> Kawiarnia Pod Wiśnią — <b>strona przykładowa</b> (firma fikcyjna)</span>
+      <span>Chcesz taką stronę dla swojej firmy? <a href="https://wisnia.dev">wisnia.dev</a></span>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    // menu mobilne
+    const burger = document.getElementById("burger");
+    const nav = document.getElementById("nav");
+    burger.addEventListener("click", () => {
+      const open = nav.classList.toggle("open");
+      burger.classList.toggle("open", open);
+      burger.setAttribute("aria-expanded", open);
+    });
+    nav.querySelectorAll("a").forEach((a) =>
+      a.addEventListener("click", () => {
+        nav.classList.remove("open");
+        burger.classList.remove("open");
+        burger.setAttribute("aria-expanded", "false");
+      })
+    );
+
+    // animacje wejścia
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) {
+          e.target.classList.add("visible");
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
+  </script>
+</body>
+</html>
