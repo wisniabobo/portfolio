@@ -236,8 +236,107 @@ a { color: var(--accent); }
 }
 .gauge-num { margin-top: -4px; }
 
+/* ===== układ giełdowy: wykres + panel boczny ===== */
+.exchange-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 330px;
+  gap: 18px;
+  margin-bottom: 22px;
+  align-items: start;
+}
+@media (max-width: 1000px) {
+  .exchange-grid { grid-template-columns: 1fr; }
+}
+
+.side-col { display: flex; flex-direction: column; gap: 18px; }
+
+.panel-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.panel-head h2 { font-size: 1rem; letter-spacing: -0.3px; }
+.spread { font-size: 0.78rem; color: var(--text-dim); }
+
+/* arkusz zleceń */
+.book-card, .trades-card { padding: 16px 16px 12px; }
+
+.book-cols {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr;
+  font-size: 0.68rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 4px;
+}
+.book-cols span:not(:first-child) { text-align: right; }
+
+.book-side { display: flex; flex-direction: column; gap: 1px; }
+.book-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr;
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  line-height: 1.9;
+  padding-inline: 2px;
+}
+.book-row > span { position: relative; z-index: 1; }
+.book-row > span:not(:first-child) { text-align: right; }
+.book-row .depth {
+  position: absolute;
+  right: 0;
+  top: 1px;
+  bottom: 1px;
+  z-index: 0;
+  border-radius: 3px;
+  transition: width 0.25s ease;
+}
+.asks .price { color: var(--down); }
+.asks .depth { background: rgba(255, 77, 107, 0.12); }
+.bids .price { color: var(--up); }
+.bids .depth { background: rgba(61, 220, 132, 0.12); }
+
+.book-mid {
+  text-align: center;
+  font-size: 1.05rem;
+  font-weight: 700;
+  padding-block: 7px;
+  margin-block: 3px;
+  border-block: 1px solid var(--border);
+}
+.book-mid.up { color: var(--up); }
+.book-mid.down { color: var(--down); }
+
+/* transakcje */
+.trades-list {
+  list-style: none;
+  max-height: 300px;
+  overflow: hidden;
+}
+.trades-list li {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr;
+  font-size: 0.76rem;
+  line-height: 1.9;
+  padding-inline: 2px;
+}
+.trades-list li > span:not(:first-child) { text-align: right; color: var(--text-dim); }
+.trades-list li.buy > .price { color: var(--up); }
+.trades-list li.sell > .price { color: var(--down); }
+.trades-list li.fresh { animation: trade-in 0.4s; }
+@keyframes trade-in {
+  0% { background: rgba(124, 92, 255, 0.18); transform: translateY(-4px); }
+  100% { background: transparent; transform: none; }
+}
+
 /* ===== wykres ===== */
-.chart-card { margin-bottom: 22px; }
+.chart-card { margin-bottom: 0; }
 
 .chart-head {
   display: flex;

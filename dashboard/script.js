@@ -36,8 +36,10 @@ const state = {
   sortDir: 1,
   search: "",
   tickerWS: null,
-  klineWS: null,
+  symbolWS: null,   // kline + depth + aggTrade wybranej pary
   wsRetry: 1000,
+  book: { bids: [], asks: [] },
+  lastMid: 0,
 };
 
 /* ---------- formatowanie (pl-PL) ---------- */
@@ -59,6 +61,12 @@ function fmtBig(v) {
   if (v >= 1e9) return nf(2, 2).format(v / 1e9) + " mld $";
   if (v >= 1e6) return nf(2, 2).format(v / 1e6) + " mln $";
   return nf(0, 0).format(v) + " $";
+}
+
+function fmtQty(v) {
+  if (v >= 1000) return nf(0, 0).format(v);
+  if (v >= 1) return nf(2, 3).format(v);
+  return nf(4, 5).format(v);
 }
 
 function fmtPct(v) {
@@ -178,7 +186,10 @@ async function loadCoins() {
     high_24h: c.high_24h,
     low_24h: c.low_24h,
     sparkline: c.sparkline_in_7d?.price || [],
-    binance: NO_BINANCE.has(c.symbol.toLowerCase()) ? null : c.symbol.toUpperCase() + "USDT",
+    // brak pary USDT: lista wyjątków + symbole spoza [a-z0-9] (np. figr_heloc)
+    binance: NO_BINANCE.has(c.symbol.toLowerCase()) || !/^[a-z0-9]+$/i.test(c.symbol)
+      ? null
+      : c.symbol.toUpperCase() + "USDT",
   }));
   state.bySymbol = new Map(state.coins.filter((c) => c.binance).map((c) => [c.binance, c]));
   if (!state.selected) {
@@ -363,7 +374,6 @@ async function loadCandles() {
       t: k[0], o: +k[1], h: +k[2], l: +k[3], c: +k[4], v: +k[5],
     }));
     state.chartLive = true;
-    openKlineWS();
   } catch {
     // fallback: CoinGecko OHLC (bez wolumenu i bez live)
     const days = { "15m": 1, "1h": 7, "4h": 30, "1d": 180, "1w": 365 }[interval] || 7;
@@ -372,26 +382,150 @@ async function loadCandles() {
       `dash-ohlc-${selected.id}-${days}`, 5 * 60 * 1000
     );
     state.candles = raw.map((k) => ({ t: k[0], o: k[1], h: k[2], l: k[3], c: k[4], v: 0 }));
-    if (state.klineWS) { state.klineWS.onclose = null; state.klineWS.close(); state.klineWS = null; }
   }
   drawChart();
 }
 
-function openKlineWS() {
-  if (state.klineWS) { state.klineWS.onclose = null; state.klineWS.close(); }
-  const stream = `${state.selected.binance.toLowerCase()}@kline_${state.interval}`;
-  const ws = new WebSocket(`${BINANCE_WS}?streams=${stream}`);
-  state.klineWS = ws;
+/* ---------- WS wybranej pary: kline + arkusz zleceń + transakcje ---------- */
+
+function openSymbolWS() {
+  if (state.symbolWS) { state.symbolWS.onclose = null; state.symbolWS.close(); }
+  const sym = state.selected.binance.toLowerCase();
+  const streams = [
+    `${sym}@kline_${state.interval}`,
+    `${sym}@depth20@100ms`,
+    `${sym}@aggTrade`,
+  ].join("/");
+  const ws = new WebSocket(`${BINANCE_WS}?streams=${streams}`);
+  state.symbolWS = ws;
+
   ws.onmessage = (e) => {
-    const { data } = JSON.parse(e.data);
-    if (!data || data.e !== "kline") return;
-    const k = data.k;
-    const candle = { t: k.t, o: +k.o, h: +k.h, l: +k.l, c: +k.c, v: +k.v };
-    const last = state.candles[state.candles.length - 1];
-    if (last && last.t === candle.t) state.candles[state.candles.length - 1] = candle;
-    else { state.candles.push(candle); state.candles.shift(); }
-    drawChart();
+    const msg = JSON.parse(e.data);
+    const data = msg.data;
+    if (!data) return;
+    if (data.e === "kline") {
+      const k = data.k;
+      const candle = { t: k.t, o: +k.o, h: +k.h, l: +k.l, c: +k.c, v: +k.v };
+      const last = state.candles[state.candles.length - 1];
+      if (last && last.t === candle.t) state.candles[state.candles.length - 1] = candle;
+      else { state.candles.push(candle); state.candles.shift(); }
+      drawChart();
+    } else if (data.e === "aggTrade") {
+      addTrade({ p: +data.p, q: +data.q, t: data.T, sell: data.m });
+    } else if (data.bids && data.asks) {
+      // partial book depth (bez pola e)
+      state.book.bids = data.bids;
+      state.book.asks = data.asks;
+      scheduleBookRender();
+    }
   };
+}
+
+/* ---------- arkusz zleceń ---------- */
+
+let bookRenderPending = false;
+function scheduleBookRender() {
+  if (bookRenderPending) return;
+  bookRenderPending = true;
+  setTimeout(() => {
+    bookRenderPending = false;
+    renderBook();
+  }, 250);
+}
+
+function bookRows(levels, el, cls, maxCum) {
+  let cum = 0;
+  const frag = document.createDocumentFragment();
+  for (const [p, q] of levels) {
+    cum += p * q;
+    const row = document.createElement("div");
+    row.className = "book-row";
+    const depth = document.createElement("span");
+    depth.className = "depth";
+    depth.style.width = `${Math.min(100, (cum / maxCum) * 100)}%`;
+    row.appendChild(depth);
+    const price = document.createElement("span");
+    price.className = "price";
+    price.textContent = fmtPrice(+p).replace(" $", "");
+    const qty = document.createElement("span");
+    qty.textContent = fmtQty(+q);
+    const total = document.createElement("span");
+    total.textContent = fmtBig(cum).replace(" $", "");
+    row.append(price, qty, total);
+    frag.appendChild(row);
+  }
+  el.innerHTML = "";
+  el.appendChild(frag);
+}
+
+function renderBook() {
+  const { bids, asks } = state.book;
+  if (!bids.length || !asks.length) return;
+  const N_LVL = 9;
+  const b = bids.slice(0, N_LVL).map(([p, q]) => [+p, +q]);
+  const a = asks.slice(0, N_LVL).map(([p, q]) => [+p, +q]);
+  const cumOf = (ls) => ls.reduce((s, [p, q]) => s + p * q, 0);
+  const maxCum = Math.max(cumOf(b), cumOf(a));
+
+  // aski od najniższej ceny na dole (jak na giełdzie) — rysujemy odwrócone
+  bookRows([...a].reverse(), document.getElementById("book-asks"), "asks", maxCum);
+  bookRows(b, document.getElementById("book-bids"), "bids", maxCum);
+
+  const bestBid = b[0][0], bestAsk = a[0][0];
+  const mid = (bestBid + bestAsk) / 2;
+  const spread = bestAsk - bestBid;
+  const midEl = document.getElementById("book-mid");
+  midEl.textContent = fmtPrice(mid);
+  midEl.className = `book-mid mono ${mid >= state.lastMid ? "up" : "down"}`;
+  state.lastMid = mid;
+  const spreadPct = (spread / mid) * 100;
+  document.getElementById("book-spread").textContent =
+    `spread ${fmtPrice(spread)} (${spreadPct < 0.01 ? "<0,01" : nf(2, 2).format(spreadPct)}%)`;
+}
+
+/* ---------- transakcje na żywo ---------- */
+
+const MAX_TRADES = 22;
+
+function tradeRow({ p, q, t, sell }, fresh = true) {
+  const li = document.createElement("li");
+  li.className = (sell ? "sell" : "buy") + (fresh ? " fresh" : "");
+  const price = document.createElement("span");
+  price.className = "price";
+  price.textContent = fmtPrice(p).replace(" $", "");
+  const qty = document.createElement("span");
+  qty.textContent = fmtQty(q);
+  const time = document.createElement("span");
+  time.textContent = new Date(t).toLocaleTimeString("pl-PL");
+  li.append(price, qty, time);
+  return li;
+}
+
+function addTrade(t) {
+  const list = document.getElementById("trades-list");
+  list.prepend(tradeRow(t));
+  while (list.children.length > MAX_TRADES) list.lastChild.remove();
+}
+
+async function bootstrapBookAndTrades() {
+  const sym = state.selected.binance;
+  document.getElementById("trades-pair").textContent = `${state.selected.symbol.toUpperCase()}/USDT`;
+  document.getElementById("trades-list").innerHTML = "";
+  state.book = { bids: [], asks: [] };
+  try {
+    const [depth, trades] = await Promise.all([
+      fetch(`${BINANCE_REST}/depth?symbol=${sym}&limit=20`).then((r) => r.json()),
+      fetch(`${BINANCE_REST}/aggTrades?symbol=${sym}&limit=${MAX_TRADES}`).then((r) => r.json()),
+    ]);
+    state.book.bids = depth.bids;
+    state.book.asks = depth.asks;
+    renderBook();
+    const list = document.getElementById("trades-list");
+    trades.reverse().forEach((tr) =>
+      list.appendChild(tradeRow({ p: +tr.p, q: +tr.q, t: tr.T, sell: tr.m }, false)));
+  } catch (e) {
+    console.warn("book/trades:", e);
+  }
 }
 
 function updateChartHeader(price, chg, prev) {
@@ -422,6 +556,8 @@ function selectCoin(coin) {
   document.querySelectorAll("#market-body tr").forEach((tr) =>
     tr.classList.toggle("selected", tr.dataset.id === coin.id));
   loadCandles();
+  openSymbolWS();
+  bootstrapBookAndTrades();
 }
 
 function setupChartControls() {
@@ -431,6 +567,7 @@ function setupChartControls() {
       btn.classList.add("active");
       state.interval = btn.dataset.interval;
       loadCandles();
+      openSymbolWS(); // stream kline z nowym interwałem
     });
   });
   document.querySelectorAll("[data-type]").forEach((btn) => {

@@ -96,7 +96,8 @@
       </article>
     </section>
 
-    <!-- ===== wykres ===== -->
+    <!-- ===== wykres + arkusz zleceń + transakcje ===== -->
+    <div class="exchange-grid">
     <section class="card chart-card">
       <header class="chart-head">
         <div class="chart-coin">
@@ -133,6 +134,33 @@
         <p id="chart-hint" class="chart-hint">kliknij monetę w tabeli, aby zmienić wykres</p>
       </div>
     </section>
+
+    <aside class="side-col">
+      <section class="card book-card">
+        <header class="panel-head">
+          <h2>Arkusz zleceń</h2>
+          <span class="mono spread" id="book-spread" title="Spread">–</span>
+        </header>
+        <div class="book-cols mono">
+          <span>Cena (USDT)</span><span>Ilość</span><span>Suma</span>
+        </div>
+        <div id="book-asks" class="book-side asks" aria-label="Oferty sprzedaży"></div>
+        <div class="book-mid mono" id="book-mid">–</div>
+        <div id="book-bids" class="book-side bids" aria-label="Oferty kupna"></div>
+      </section>
+
+      <section class="card trades-card">
+        <header class="panel-head">
+          <h2>Transakcje</h2>
+          <span class="sub" id="trades-pair"></span>
+        </header>
+        <div class="book-cols mono">
+          <span>Cena</span><span>Ilość</span><span>Czas</span>
+        </div>
+        <ol id="trades-list" class="trades-list mono"></ol>
+      </section>
+    </aside>
+    </div>
 
     <!-- ===== tabela rynku ===== -->
     <section class="card table-card">
