@@ -36,6 +36,13 @@
 /* atrybut hidden ma wygrywać z każdym display z klas */
 [hidden] { display: none !important; }
 
+/* wyraźny focus dla klawiatury */
+a:focus-visible, button:focus-visible, input:focus-visible {
+  outline: 2px solid var(--accent-2);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
 body {
   font-family: var(--font-body);
   background: var(--bg);

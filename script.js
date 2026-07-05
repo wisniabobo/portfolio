@@ -231,18 +231,32 @@ async function fetchRepos() {
   return repos;
 }
 
+// działające dema aplikacji hostowane na GitHub Pages
+const DEMOS = {
+  "ekw": "https://wisniabobo.github.io/ekw/",
+  "Ustr-j-Organ-w-Ochrony-Prawnej": "https://wisniabobo.github.io/Ustr-j-Organ-w-Ochrony-Prawnej/",
+  "etyka-prawnicza": "https://wisniabobo.github.io/etyka-prawnicza/",
+};
+
 function repoCard(repo) {
-  const a = document.createElement("a");
-  a.className = "repo-card glow-card reveal";
-  a.href = repo.html_url;
-  a.target = "_blank";
-  a.rel = "noopener";
+  const card = document.createElement("div");
+  card.className = "repo-card glow-card reveal";
+  // cała karta klikalna, ale linki w środku mają pierwszeństwo
+  card.addEventListener("click", (e) => {
+    if (e.target.closest("a")) return;
+    window.open(repo.html_url, "_blank", "noopener");
+  });
 
   const name = document.createElement("div");
   name.className = "repo-name";
   name.innerHTML =
     '<svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M2 2.5A2.5 2.5 0 0 1 4.5 0h8.75a.75.75 0 0 1 .75.75v12.5a.75.75 0 0 1-.75.75h-2.5a.75.75 0 0 1 0-1.5h1.75v-2h-8a1 1 0 0 0-.714 1.7.75.75 0 1 1-1.072 1.05A2.495 2.495 0 0 1 2 11.5Zm10.5-1h-8a1 1 0 0 0-1 1v6.708A2.486 2.486 0 0 1 4.5 9h8ZM5 12.25a.25.25 0 0 1 .25-.25h3.5a.25.25 0 0 1 .25.25v3.25a.25.25 0 0 1-.4.2l-1.45-1.087a.249.249 0 0 0-.3 0L5.4 15.7a.25.25 0 0 1-.4-.2Z"/></svg>';
-  name.appendChild(document.createTextNode(repo.name));
+  const nameLink = document.createElement("a");
+  nameLink.href = repo.html_url;
+  nameLink.target = "_blank";
+  nameLink.rel = "noopener";
+  nameLink.textContent = repo.name;
+  name.appendChild(nameLink);
 
   const desc = document.createElement("p");
   desc.className = "repo-desc";
@@ -271,8 +285,19 @@ function repoCard(repo) {
   updated.textContent = `aktualizacja: ${timeAgo(repo.pushed_at)}`;
   meta.appendChild(updated);
 
-  a.append(name, desc, meta);
-  return a;
+  card.append(name, desc, meta);
+
+  if (DEMOS[repo.name]) {
+    const demo = document.createElement("a");
+    demo.className = "repo-demo";
+    demo.href = DEMOS[repo.name];
+    demo.target = "_blank";
+    demo.rel = "noopener";
+    demo.innerHTML = "▶ Zobacz demo na żywo <span class=\"arrow\">→</span>";
+    card.appendChild(demo);
+  }
+
+  return card;
 }
 
 function renderStats(repos) {

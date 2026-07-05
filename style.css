@@ -38,6 +38,16 @@
 /* atrybut hidden ma wygrywać z każdym display z klas */
 [hidden] { display: none !important; }
 
+/* kotwice nie mogą chować się pod sticky headerem */
+section[id] { scroll-margin-top: 84px; }
+
+/* wyraźny focus dla klawiatury */
+a:focus-visible, button:focus-visible, summary:focus-visible {
+  outline: 2px solid var(--accent-2);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
 html { scroll-behavior: smooth; }
 
 body {
@@ -437,6 +447,16 @@ h1, h2, h3 { font-family: var(--font-head); }
 .stack-icon { font-size: 1.9rem; display: block; margin-bottom: 12px; }
 .stack-card h3 { font-size: 1.1rem; margin-bottom: 8px; letter-spacing: -0.4px; }
 .stack-card p { color: var(--text-dim); font-size: 0.92rem; }
+.card-demo-link {
+  display: inline-block;
+  margin-top: 12px;
+  color: var(--up);
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+.card-demo-link .arrow { display: inline-block; transition: transform 0.2s; }
+.card-demo-link:hover .arrow { transform: translateX(5px); }
 
 /* ===== o mnie ===== */
 .about-grid {
@@ -589,8 +609,23 @@ h1, h2, h3 { font-family: var(--font-head); }
   border: 1px solid var(--border);
   text-decoration: none;
   color: var(--text);
+  cursor: pointer;
   transition: transform 0.25s, border-color 0.25s, background 0.25s;
 }
+.repo-name a {
+  color: inherit;
+  text-decoration: none;
+}
+.repo-name a:hover { color: var(--accent); }
+.repo-demo {
+  color: var(--up);
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-decoration: none;
+  margin-top: 2px;
+}
+.repo-demo .arrow { display: inline-block; transition: transform 0.2s; }
+.repo-demo:hover .arrow { transform: translateX(5px); }
 .repo-card:hover {
   transform: translateY(-6px);
   border-color: rgba(124, 92, 255, 0.5);
