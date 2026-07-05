@@ -60,6 +60,8 @@
         "name": "Tomasz Wiszniewski",
         "url": "https://wisnia.dev",
         "jobTitle": "Web Developer",
+        "description": "Student prawa na Uniwersytecie Opolskim, tworzy strony internetowe i aplikacje webowe.",
+        "affiliation": { "@type": "CollegeOrUniversity", "name": "Uniwersytet Opolski" },
         "sameAs": ["https://github.com/wisniabobo"],
         "knowsAbout": ["JavaScript", "TypeScript", "HTML", "CSS", "nginx", "Linux", "SEO"]
       },
@@ -122,6 +124,7 @@
       <a href="#" class="nav-logo" id="logo">wisnia<span>.dev</span></a>
       <div class="nav-right">
         <div class="nav-links">
+          <a href="#o-mnie">O mnie</a>
           <a href="#uslugi">Usługi</a>
           <a href="#projekty">Projekty</a>
           <a href="#stack">Stack</a>
@@ -169,6 +172,35 @@
         <div class="floating-card fc-1">🏠 metruj.pl</div>
         <div class="floating-card fc-2">🚗 autio.pl</div>
         <div class="floating-card fc-3">&lt;/&gt; open source</div>
+      </div>
+    </section>
+
+    <!-- ===== O MNIE ===== -->
+    <section id="o-mnie" class="section container">
+      <div class="section-head reveal">
+        <h2>Kim jestem</h2>
+        <p>Nietypowe połączenie: prawo i kod.</p>
+      </div>
+      <div class="about-grid reveal">
+        <div class="about-text glow-card">
+          <p>Jestem <strong>studentem prawa na Uniwersytecie Opolskim</strong> i pasjonatem
+             aplikacji webowych. Programowanie zaczęło się od praktycznych narzędzi
+             do nauki — aplikacji do prawa rzymskiego, etyki prawniczej czy ustroju
+             organów ochrony prawnej (wszystkie znajdziesz niżej, w sekcji GitHub) —
+             a doprowadziło do własnych portali z realnymi użytkownikami:
+             <a href="https://metruj.pl" target="_blank" rel="noopener">metruj.pl</a>
+             i <a href="https://autio.pl" target="_blank" rel="noopener">autio.pl</a>.</p>
+          <p>Działam solo, bez biura i zespołu — dlatego mogę oferować
+             <strong>uczciwe ceny</strong>, a jakość łatwo zweryfikujesz:
+             wszystkie moje projekty działają publicznie i możesz je
+             kliknąć na tej stronie.</p>
+        </div>
+        <ul class="about-facts">
+          <li class="glow-card"><span>🎓</span> Student prawa — Uniwersytet Opolski</li>
+          <li class="glow-card"><span>💻</span> Aplikacje webowe z pasji, nie z korporacji</li>
+          <li class="glow-card"><span>🚀</span> Własne portale na produkcji: metruj.pl, autio.pl</li>
+          <li class="glow-card"><span>💰</span> Dobre ceny — bez narzutów agencji</li>
+        </ul>
       </div>
     </section>
 
@@ -304,11 +336,11 @@
       <div class="marquee reveal" aria-hidden="true">
         <div class="marquee-track">
           <span>JavaScript</span><span>TypeScript</span><span>HTML5</span><span>CSS3</span>
-          <span>Node.js</span><span>REST API</span><span>Git &amp; GitHub</span><span>nginx</span>
+          <span>WebSocket</span><span>REST API</span><span>Git &amp; GitHub</span><span>nginx</span>
           <span>Linux / Ubuntu</span><span>Let's Encrypt</span><span>SEO</span><span>RWD</span>
           <!-- duplikat dla płynnej pętli -->
           <span>JavaScript</span><span>TypeScript</span><span>HTML5</span><span>CSS3</span>
-          <span>Node.js</span><span>REST API</span><span>Git &amp; GitHub</span><span>nginx</span>
+          <span>WebSocket</span><span>REST API</span><span>Git &amp; GitHub</span><span>nginx</span>
           <span>Linux / Ubuntu</span><span>Let's Encrypt</span><span>SEO</span><span>RWD</span>
         </div>
       </div>
@@ -321,9 +353,10 @@
         </div>
         <div class="stack-card glow-card reveal">
           <span class="stack-icon">⚙️</span>
-          <h3>Backend &amp; API</h3>
-          <p>Node.js, integracje z REST API (m.in. GitHub API na tej stronie),
-             obsługa formularzy, ogłoszeń i danych użytkowników.</p>
+          <h3>Integracje &amp; API</h3>
+          <p>Integracje z zewnętrznymi API — GitHub na tej stronie, Binance
+             (WebSocket, dane na żywo) na moim dashboardzie — oraz zaplecze
+             portali ogłoszeniowych: ogłoszenia, formularze, konta użytkowników.</p>
         </div>
         <div class="stack-card glow-card reveal">
           <span class="stack-icon">🖥️</span>
