@@ -438,6 +438,52 @@ h1, h2, h3 { font-family: var(--font-head); }
 .stack-card h3 { font-size: 1.1rem; margin-bottom: 8px; letter-spacing: -0.4px; }
 .stack-card p { color: var(--text-dim); font-size: 0.92rem; }
 
+/* ===== FAQ ===== */
+.faq { margin-top: 44px; }
+.faq-title {
+  font-size: 1.15rem;
+  letter-spacing: -0.4px;
+  margin-bottom: 16px;
+}
+.faq details {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-card);
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+.faq summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 16px 20px;
+  font-weight: 600;
+  font-size: 0.97rem;
+  position: relative;
+  transition: background 0.2s;
+}
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after {
+  content: "+";
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--accent);
+  font-size: 1.3rem;
+  font-weight: 400;
+  transition: transform 0.25s;
+}
+.faq details[open] summary::after { transform: translateY(-50%) rotate(45deg); }
+.faq summary:hover { background: var(--bg-card-hover); }
+.faq details p {
+  padding: 0 20px 16px;
+  color: var(--text-dim);
+  font-size: 0.93rem;
+}
+.faq details p strong, .stack-card p strong { color: var(--text); }
+.stack-card p a { color: var(--accent); text-decoration: none; }
+.stack-card p a:hover { text-decoration: underline; }
+
 /* ===== github ===== */
 .gh-stats {
   display: flex;

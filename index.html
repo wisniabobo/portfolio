@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tomasz Wiszniewski — Web Developer | wisnia.dev</title>
-  <meta name="description" content="Portfolio Tomasza Wiszniewskiego — buduję i utrzymuję serwisy internetowe: portale ogłoszeniowe metruj.pl i autio.pl, strony firmowe oraz projekty open source.">
+  <title>Strony Internetowe Opole — Tomasz Wiszniewski | wisnia.dev</title>
+  <meta name="description" content="Tworzenie stron internetowych w Opolu i zdalnie w całej Polsce — strony firmowe, portale ogłoszeniowe i aplikacje webowe. Szybkie, responsywne, widoczne w Google. Portfolio: metruj.pl, autio.pl.">
   <link rel="canonical" href="https://wisnia.dev/">
 
-  <meta property="og:title" content="Tomasz Wiszniewski — Web Developer">
-  <meta property="og:description" content="Buduję serwisy internetowe: metruj.pl, biuro.metruj.pl, autio.pl oraz projekty open source na GitHubie.">
+  <meta property="og:title" content="Strony Internetowe Opole — Tomasz Wiszniewski">
+  <meta property="og:description" content="Strony firmowe, portale i aplikacje webowe — od projektu po wdrożenie i utrzymanie. Portfolio: metruj.pl, biuro.metruj.pl, autio.pl.">
   <meta property="og:url" content="https://wisnia.dev/">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="pl_PL">
@@ -31,13 +31,85 @@
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "Person",
-    "name": "Tomasz Wiszniewski",
-    "url": "https://wisnia.dev",
-    "jobTitle": "Web Developer",
-    "nationality": "PL",
-    "sameAs": ["https://github.com/wisniabobo"],
-    "knowsAbout": ["JavaScript", "TypeScript", "HTML", "CSS", "nginx", "Linux"]
+    "@graph": [
+      {
+        "@type": "ProfessionalService",
+        "@id": "https://wisnia.dev/#firma",
+        "name": "wisnia.dev — Tworzenie stron internetowych Opole",
+        "description": "Tworzenie stron internetowych, portali ogłoszeniowych i aplikacji webowych. Projekt, wdrożenie, hosting i opieka techniczna.",
+        "url": "https://wisnia.dev",
+        "email": "mailto:tomasz.wiszniewski123@gmail.com",
+        "image": "https://avatars.githubusercontent.com/u/144959798?v=4",
+        "priceRange": "$$",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Opole",
+          "addressRegion": "Opolskie",
+          "addressCountry": "PL"
+        },
+        "areaServed": [
+          { "@type": "City", "name": "Opole" },
+          { "@type": "Country", "name": "Polska" }
+        ],
+        "founder": { "@id": "https://wisnia.dev/#osoba" },
+        "sameAs": ["https://github.com/wisniabobo"]
+      },
+      {
+        "@type": "Person",
+        "@id": "https://wisnia.dev/#osoba",
+        "name": "Tomasz Wiszniewski",
+        "url": "https://wisnia.dev",
+        "jobTitle": "Web Developer",
+        "sameAs": ["https://github.com/wisniabobo"],
+        "knowsAbout": ["JavaScript", "TypeScript", "HTML", "CSS", "nginx", "Linux", "SEO"]
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://wisnia.dev/#strona",
+        "name": "wisnia.dev",
+        "url": "https://wisnia.dev",
+        "inLanguage": "pl-PL",
+        "publisher": { "@id": "https://wisnia.dev/#osoba" }
+      },
+      {
+        "@type": "FAQPage",
+        "@id": "https://wisnia.dev/#faq",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Ile kosztuje strona internetowa w Opolu?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "To zależy od zakresu — prosta strona-wizytówka to inny budżet niż portal z ogłoszeniami czy sklep. Napisz i opisz swoje potrzeby, a przygotuję darmową wycenę."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Jak długo trwa stworzenie strony internetowej?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Strona-wizytówka to zwykle 1–2 tygodnie. Większe serwisy i portale — od kilku tygodni. Termin ustalamy zawsze przed rozpoczęciem prac."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Czy moja strona będzie widoczna w Google?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Każdą stronę buduję z poprawnym SEO technicznym: semantyczny HTML, szybkie ładowanie, meta dane, sitemap i dane strukturalne. Długofalowe pozycjonowanie wymaga też treści i opinii — doradzam, jak to poprowadzić."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Czy obsługujesz tylko Opole?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Pracuję z Opola, ale w pełni zdalnie — obsługuję klientów z całej Polski. Cały proces, od wyceny po wdrożenie, odbywa się online."
+            }
+          }
+        ]
+      }
+    ]
   }
   </script>
 </head>
@@ -50,6 +122,7 @@
       <a href="#" class="nav-logo" id="logo">wisnia<span>.dev</span></a>
       <div class="nav-right">
         <div class="nav-links">
+          <a href="#uslugi">Usługi</a>
           <a href="#projekty">Projekty</a>
           <a href="#stack">Stack</a>
           <a href="#github">GitHub</a>
@@ -73,8 +146,9 @@
           Buduję&nbsp;<span id="typed">portale ogłoszeniowe</span><span class="caret" aria-hidden="true"></span>
         </p>
         <p class="hero-tagline">
-          Od pomysłu, przez kod, po <strong>wdrożenie i utrzymanie na produkcji</strong>.
-          Własny serwer, własne deploye, realni użytkownicy.
+          Tworzę <strong>strony internetowe i portale</strong> — Opole i cała Polska,
+          w pełni zdalnie. Od pomysłu, przez kod, po wdrożenie i utrzymanie
+          na produkcji. Własny serwer, realni użytkownicy.
         </p>
         <div class="hero-cta">
           <a href="#projekty" class="btn btn-primary">Zobacz projekty</a>
@@ -95,6 +169,64 @@
         <div class="floating-card fc-1">🏠 metruj.pl</div>
         <div class="floating-card fc-2">🚗 autio.pl</div>
         <div class="floating-card fc-3">&lt;/&gt; open source</div>
+      </div>
+    </section>
+
+    <!-- ===== USŁUGI ===== -->
+    <section id="uslugi" class="section container">
+      <div class="section-head reveal">
+        <h2>Strony internetowe — Opole i cała Polska</h2>
+        <p>Projektuję, koduję i utrzymuję. Jedna osoba odpowiedzialna za całość —
+           bez podwykonawców i bez przerzucania się mailami między „grafikiem a programistą".</p>
+      </div>
+      <div class="stack-grid">
+        <div class="stack-card glow-card reveal">
+          <span class="stack-icon">🌐</span>
+          <h3>Strony firmowe i wizytówki</h3>
+          <p>Szybkie, responsywne strony, które dobrze wyglądają na telefonie
+             i dobrze indeksują się w Google. Projekt graficzny, treść,
+             wdrożenie, SSL — kompletna realizacja.</p>
+        </div>
+        <div class="stack-card glow-card reveal">
+          <span class="stack-icon">🛒</span>
+          <h3>Portale i aplikacje webowe</h3>
+          <p>Serwisy ogłoszeniowe, katalogi ofert, panele administracyjne —
+             takie jak <a href="https://metruj.pl" target="_blank" rel="noopener">metruj.pl</a>
+             czy <a href="https://autio.pl" target="_blank" rel="noopener">autio.pl</a>,
+             które zbudowałem i prowadzę.</p>
+        </div>
+        <div class="stack-card glow-card reveal">
+          <span class="stack-icon">🔧</span>
+          <h3>Hosting i opieka techniczna</h3>
+          <p>Własny serwer VPS, certyfikaty SSL, kopie zapasowe, aktualizacje
+             i monitoring. Strona nie tylko powstaje — <strong>działa i jest zaopiekowana</strong>.</p>
+        </div>
+      </div>
+
+      <div class="faq reveal">
+        <h3 class="faq-title">Częste pytania</h3>
+        <details>
+          <summary>Ile kosztuje strona internetowa w Opolu?</summary>
+          <p>To zależy od zakresu — prosta strona-wizytówka to inny budżet niż portal
+             z ogłoszeniami czy sklep. Napisz i opisz swoje potrzeby,
+             a przygotuję <strong>darmową wycenę</strong>.</p>
+        </details>
+        <details>
+          <summary>Jak długo trwa stworzenie strony internetowej?</summary>
+          <p>Strona-wizytówka to zwykle 1–2 tygodnie. Większe serwisy i portale —
+             od kilku tygodni. Termin ustalamy zawsze przed rozpoczęciem prac.</p>
+        </details>
+        <details>
+          <summary>Czy moja strona będzie widoczna w Google?</summary>
+          <p>Każdą stronę buduję z poprawnym SEO technicznym: semantyczny HTML, szybkie
+             ładowanie, meta dane, sitemap i dane strukturalne. Długofalowe pozycjonowanie
+             wymaga też treści i opinii — doradzam, jak to poprowadzić.</p>
+        </details>
+        <details>
+          <summary>Czy obsługujesz tylko Opole?</summary>
+          <p>Pracuję z Opola, ale w pełni zdalnie — obsługuję klientów z całej Polski.
+             Cały proces, od wyceny po wdrożenie, odbywa się online.</p>
+        </details>
       </div>
     </section>
 
@@ -159,20 +291,6 @@
             <li>WebSocket</li><li>Canvas</li><li>Realtime API</li>
           </ul>
           <span class="live-link">dashboard.wisnia.dev <span class="arrow">→</span></span>
-        </a>
-
-        <a href="https://saper.wisnia.dev" target="_blank" rel="noopener" class="live-card glow-card tilt reveal">
-          <div class="live-card-top">
-            <span class="live-icon">🕹️</span>
-            <span class="live-badge"><span class="dot-online"></span> LIVE</span>
-          </div>
-          <h3>saper.wisnia.dev</h3>
-          <p>Mini-arcade: dopracowany Saper (bezpieczny pierwszy klik, chording)
-             i 2048 z combo — dźwięki z Web Audio, wibracje, konfetti. Zero frameworków.</p>
-          <ul class="tags">
-            <li>Gry</li><li>Canvas &amp; DOM</li><li>Web Audio</li>
-          </ul>
-          <span class="live-link">saper.wisnia.dev <span class="arrow">→</span></span>
         </a>
       </div>
     </section>
